@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./docs/assets/haircat.png" alt="Haircat Logo">
+</p>
+
 # Haircat backend
 
 ## Setup
