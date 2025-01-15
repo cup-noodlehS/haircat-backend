@@ -4,6 +4,10 @@
 
 # Haircat backend
 
+## Related repos
+
+-   [Haircat mobile frontend repo](https://github.com/jourdancatarina3/haircat)
+
 ## Setup
 
 -   [Mac Setup Guide](/docs/setup/mac_setup.md)
