@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Location(models.Model):
     name = models.TextField(max_length=255)
     x_coordinate = models.FloatField()

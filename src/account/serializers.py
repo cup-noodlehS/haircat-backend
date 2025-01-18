@@ -7,4 +7,7 @@ class UserSerializer(UserBaseSerializer):
     location = LocationBaseSerializer(read_only=True)
 
     class Meta(UserBaseSerializer.Meta):
-        fields = UserBaseSerializer.Meta.fields + ('pfp', 'location',)
+        fields = UserBaseSerializer.Meta.fields + (
+            "pfp",
+            "location",
+        )
