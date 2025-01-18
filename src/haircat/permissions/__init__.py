@@ -1,1 +1,1 @@
-from .generics import * # noqa
+from .generics import *  # noqa

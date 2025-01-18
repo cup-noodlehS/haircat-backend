@@ -21,7 +21,7 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        user.set_password(request.data['password'])
+        user.set_password(request.data["password"])
         user.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -33,17 +33,18 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
+
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         # Perform any logout actions if needed
-        return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
+        return Response(
+            {"detail": "Successfully logged out."}, status=status.HTTP_200_OK
+        )
 
 
 class UserView(GenericView):
     permission_classes = [IsAuthenticated]
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
-
-

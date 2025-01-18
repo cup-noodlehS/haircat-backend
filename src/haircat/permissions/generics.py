@@ -11,7 +11,7 @@ class IsAuthenticated(BasePermission):
     """
 
     def has_permission(self, request, view):
-        if os.getenv('DISABLE_AUTH') == 'True':
+        if os.getenv("DISABLE_AUTH") == "True":
             return True
         return bool(request.user and request.user.is_authenticated)
 
@@ -31,7 +31,7 @@ class OnlyAdminCanCreate(BasePermission):
     """
 
     def has_permission(self, request, view):
-        if request.method == 'POST':
+        if request.method == "POST":
             return request.user and request.user.is_admin
         return True
 
@@ -42,7 +42,7 @@ class OnlyAdminCanUpdate(BasePermission):
     """
 
     def has_permission(self, request, view):
-        if request.method == 'PUT':
+        if request.method == "PUT":
             return request.user and request.user.is_admin
         return True
 
@@ -53,7 +53,7 @@ class OnlyAdminCanDelete(BasePermission):
     """
 
     def has_permission(self, request, view):
-        if request.method == 'DELETE':
+        if request.method == "DELETE":
             return request.user and request.user.is_admin
         return True
 
@@ -64,6 +64,6 @@ class OnlyAdminCanRead(BasePermission):
     """
 
     def has_permission(self, request, view):
-        if request.method == 'GET':
+        if request.method == "GET":
             return request.user and request.user.is_admin
         return True
