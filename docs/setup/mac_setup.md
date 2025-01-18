@@ -112,7 +112,7 @@ pip install -r requirements.txt
     ```
     brew services restart postgresql@14
     ```
-8. Run migrations `python haircat/manage.py migrate`
+8. Run migrations `python src/manage.py migrate`
 
 ## Running the server
 
@@ -123,7 +123,7 @@ pip install -r requirements.txt
     > to deactivate, run `deactivate`
 2. Run server
     ```
-    python haircat/manage.py runserver
+    python src/manage.py runserver
     ```
 
 <p align="right">Last updated by <a href="https://github.com/cup-noodlehS"><b>Sheldon Arthur</b></a></p>
