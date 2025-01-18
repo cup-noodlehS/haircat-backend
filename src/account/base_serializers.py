@@ -24,6 +24,7 @@ class UserBaseSerializer(serializers.ModelSerializer):
             "password",
             "date_joined",
             "phone_number",
+            "full_name"
         )
 
 

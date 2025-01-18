@@ -34,7 +34,7 @@ class CustomUser(AbstractUser):
         verbose_name="user permissions",
     )
 
-    phone_number = models.TextField(max_length=13)
+    phone_number = models.TextField(max_length=13, null=True, blank=True)
     location = models.ForeignKey(
         Location, null=True, blank=True, on_delete=models.SET_NULL
     )

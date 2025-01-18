@@ -1,4 +1,4 @@
-from base_serializers import UserBaseSerializer
+from .base_serializers import UserBaseSerializer
 from general.base_serializers import FileBaseSerializer, LocationBaseSerializer
 
 
