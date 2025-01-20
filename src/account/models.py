@@ -191,3 +191,55 @@ class DayAvailability(models.Model):
 
     def __str__(self):
         return f"{self.specialist}'s availability on {self.day_of_week_display}"
+
+
+class DayOff(models.Model):
+    """
+    Represents a day off for a specialist.
+
+    **Fields**
+    - specialist: FK to Specialist this day off belongs to
+    - type: IntegerField for type of day off (vacation, sick, personal, etc.)
+    - date: Date of the day off
+    - created_at: Timestamp when this record was created
+    """
+    
+    HOLIDAY = 0
+    VACATION = 1
+    SICK = 2
+    PERSONAL = 3
+    OTHER = 4
+
+    TYPE_CHOICES = [
+        (HOLIDAY, 'Holiday'),
+        (VACATION, 'Vacation'),
+        (SICK, 'Sick Leave'),
+        (PERSONAL, 'Personal'),
+        (OTHER, 'Other')
+    ]
+
+    specialist = models.ForeignKey(
+        Specialist,
+        on_delete=models.CASCADE,
+        related_name='days_off',
+        help_text='The specialist taking the day off'
+    )
+    type = models.IntegerField(
+        choices=TYPE_CHOICES,
+        help_text='Type of day off'
+    )
+    date = models.DateField(
+        help_text='Date of the day off'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text='When this day off was recorded'
+    )
+
+    class Meta:
+        verbose_name = 'Day Off'
+        verbose_name_plural = 'Days Off'
+        ordering = ['-date']
+
+    def __str__(self):
+        return f"{self.specialist}'s {self.type} day off on {self.date}"
