@@ -1,4 +1,4 @@
-from .base_serializers import UserBaseSerializer
+from .base_serializers import UserBaseSerializer, CustomerBaseSerializer, SpecialistBaseSerializer
 from general.base_serializers import FileBaseSerializer, LocationBaseSerializer
 
 
@@ -11,3 +11,11 @@ class UserSerializer(UserBaseSerializer):
             "pfp",
             "location",
         )
+
+
+class CustomerSerializer(CustomerBaseSerializer):
+    user = UserSerializer()
+
+
+class SpecialistSerializer(SpecialistBaseSerializer):
+    user = UserSerializer()

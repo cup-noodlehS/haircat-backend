@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from account.models import CustomUser
+from account.models import CustomUser, Customer, Specialist
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
@@ -24,7 +24,7 @@ class UserBaseSerializer(serializers.ModelSerializer):
             "password",
             "date_joined",
             "phone_number",
-            "full_name"
+            "full_name",
         )
 
 
@@ -39,3 +39,15 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data["access"] = str(refresh.access_token)
         data["user"] = UserBaseSerializer(self.user).data
         return data
+
+
+class CustomerBaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = "__all__"
+
+
+class SpecialistBaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Specialist
+        fields = "__all__"

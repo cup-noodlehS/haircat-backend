@@ -64,7 +64,10 @@ class Customer(models.Model):
     **Fields**
     - user: FK to CustomUser
     """
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='customer')
+
+    user = models.OneToOneField(
+        CustomUser, on_delete=models.CASCADE, related_name="customer"
+    )
 
 
 class Specialist(models.Model):
@@ -74,6 +77,11 @@ class Specialist(models.Model):
     - bio: text field
     - point_to_php: float field
     """
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='specialist')
-    bio = models.TextField(blank=True, help_text="Specialist's biography and description")
+
+    user = models.OneToOneField(
+        CustomUser, on_delete=models.CASCADE, related_name="specialist"
+    )
+    bio = models.TextField(
+        blank=True, help_text="Specialist's biography and description"
+    )
     point_to_php = models.FloatField()
