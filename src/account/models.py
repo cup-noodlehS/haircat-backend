@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.contrib.auth.hashers import make_password
+from django.core.validators import RegexValidator, MinValueValidator
 
 from general.models import File, Location
 
@@ -34,11 +35,22 @@ class CustomUser(AbstractUser):
         verbose_name="user permissions",
     )
 
-    phone_number = models.TextField(max_length=13, null=True, blank=True)
+    phone_number = models.CharField(
+        max_length=15,
+        null=True,
+        blank=True,
+        validators=[RegexValidator(
+            regex=r'^\+?1?\d{9,15}$',
+            message="Phone number must be entered in format: '+999999999'. Up to 15 digits allowed."
+        )]
+    )
     location = models.ForeignKey(
         Location, null=True, blank=True, on_delete=models.SET_NULL
     )
     pfp = models.ForeignKey(File, null=True, blank=True, on_delete=models.SET_NULL)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     @property
     def full_name(self):
@@ -49,6 +61,16 @@ class CustomUser(AbstractUser):
         if self.pfp:
             return self.pfp.url
         return None
+
+    @property
+    def is_specialist(self):
+        """Check if user is a specialist"""
+        return hasattr(self, 'specialist')
+
+    @property
+    def is_customer(self):
+        """Check if user is a customer"""
+        return hasattr(self, 'customer')
 
     def save(self, *args, **kwargs):
         if self.password and not self.password.startswith("pbkdf2_sha256$"):
@@ -69,6 +91,14 @@ class Customer(models.Model):
         CustomUser, on_delete=models.CASCADE, related_name="customer"
     )
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def total_points(self):
+        """Get total reward points for customer"""
+        return self.reward_points.aggregate(total=models.Sum('points'))['total'] or 0
+
     def __str__(self):
         return f"Customer - {self.user.full_name}"
 
@@ -87,7 +117,28 @@ class Specialist(models.Model):
     bio = models.TextField(
         blank=True, help_text="Specialist's biography and description"
     )
-    point_to_php = models.FloatField()
+    point_to_php = models.FloatField(
+        default=0.0,
+        validators=[MinValueValidator(0.0)],
+        help_text="Conversion rate from points to PHP currency"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def is_available(self, date, time):
+        """Check if specialist is available at given date/time"""
+        # Skip if day off
+        if self.days_off.filter(date=date).exists():
+            return False
+            
+        # Check regular availability
+        weekday = date.weekday()
+        return self.availabilities.filter(
+            day_of_week=weekday,
+            start_time__lte=time,
+            end_time__gt=time
+        ).exists()
 
     def __str__(self):
         return f"Specialist - {self.user.full_name}"
@@ -116,8 +167,15 @@ class RewardPoints(models.Model):
         help_text='Specialist who awarded these points'
     )
     points = models.IntegerField(
-        help_text='Number of points awarded'
+        validators=[MinValueValidator(1)],
+        help_text='Number of points awarded (minimum 1)'
     )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "Reward Points"
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"{self.points} points from {self.specialist} to {self.customer}"
@@ -240,6 +298,12 @@ class DayOff(models.Model):
         verbose_name = 'Day Off'
         verbose_name_plural = 'Days Off'
         ordering = ['-date']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['specialist', 'date'],
+                name='unique_specialist_day_off'
+            )
+        ]
 
     def __str__(self):
         return f"{self.specialist}'s {self.type} day off on {self.date}"
