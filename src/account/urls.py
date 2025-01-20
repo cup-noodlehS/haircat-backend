@@ -6,6 +6,8 @@ from .views import (
     UserProfileView,
     LogoutView,
     UserView,
+    CustomerView,
+    SpecialistView,
 )
 from .throttling import UserLoginRateThrottle
 from rest_framework.throttling import AnonRateThrottle
@@ -29,5 +31,27 @@ urlpatterns = [
         "users/<int:pk>/",
         UserView.as_view({"get": "retrieve", "put": "update", "delete": "destroy"}),
         name="user-detail",
+    ),
+    path(
+        "customers/",
+        CustomerView.as_view({"get": "list", "post": "create"}),
+        name="customer-list",
+    ),
+    path(
+        "customers/<int:pk>/",
+        CustomerView.as_view({"get": "retrieve", "put": "update", "delete": "destroy"}),
+        name="customer-detail",
+    ),
+    path(
+        "specialists/",
+        SpecialistView.as_view({"get": "list", "post": "create"}),
+        name="specialist-list",
+    ),
+    path(
+        "specialists/<int:pk>/",
+        SpecialistView.as_view(
+            {"get": "retrieve", "put": "update", "delete": "destroy"}
+        ),
+        name="specialist-detail",
     ),
 ]

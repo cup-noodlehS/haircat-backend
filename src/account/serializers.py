@@ -1,4 +1,8 @@
-from .base_serializers import UserBaseSerializer, CustomerBaseSerializer, SpecialistBaseSerializer
+from .base_serializers import (
+    UserBaseSerializer,
+    CustomerBaseSerializer,
+    SpecialistBaseSerializer,
+)
 from general.base_serializers import FileBaseSerializer, LocationBaseSerializer
 
 
