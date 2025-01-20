@@ -57,3 +57,23 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.full_name
+
+
+class Customer(models.Model):
+    """
+    **Fields**
+    - user: FK to CustomUser
+    """
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='customer')
+
+
+class Specialist(models.Model):
+    """
+    **Fields**
+    - user: FK to CustomUser
+    - bio: text field
+    - point_to_php: float field
+    """
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='specialist')
+    bio = models.TextField(blank=True, help_text="Specialist's biography and description")
+    point_to_php = models.FloatField()
