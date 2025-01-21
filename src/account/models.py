@@ -39,10 +39,12 @@ class CustomUser(AbstractUser):
         max_length=15,
         null=True,
         blank=True,
-        validators=[RegexValidator(
-            regex=r'^\+?1?\d{9,15}$',
-            message="Phone number must be entered in format: '+999999999'. Up to 15 digits allowed."
-        )]
+        validators=[
+            RegexValidator(
+                regex=r"^\+?1?\d{9,15}$",
+                message="Phone number must be entered in format: '+999999999'. Up to 15 digits allowed.",
+            )
+        ],
     )
     location = models.ForeignKey(
         Location, null=True, blank=True, on_delete=models.SET_NULL
@@ -65,12 +67,12 @@ class CustomUser(AbstractUser):
     @property
     def is_specialist(self):
         """Check if user is a specialist"""
-        return hasattr(self, 'specialist')
+        return hasattr(self, "specialist")
 
     @property
     def is_customer(self):
         """Check if user is a customer"""
-        return hasattr(self, 'customer')
+        return hasattr(self, "customer")
 
     def save(self, *args, **kwargs):
         if self.password and not self.password.startswith("pbkdf2_sha256$"):
@@ -97,7 +99,7 @@ class Customer(models.Model):
     @property
     def total_points(self):
         """Get total reward points for customer"""
-        return self.reward_points.aggregate(total=models.Sum('points'))['total'] or 0
+        return self.reward_points.aggregate(total=models.Sum("points"))["total"] or 0
 
     def __str__(self):
         return f"Customer - {self.user.full_name}"
@@ -120,7 +122,7 @@ class Specialist(models.Model):
     point_to_php = models.FloatField(
         default=0.0,
         validators=[MinValueValidator(0.0)],
-        help_text="Conversion rate from points to PHP currency"
+        help_text="Conversion rate from points to PHP currency",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -131,13 +133,11 @@ class Specialist(models.Model):
         # Skip if day off
         if self.days_off.filter(date=date).exists():
             return False
-            
+
         # Check regular availability
         weekday = date.weekday()
         return self.availabilities.filter(
-            day_of_week=weekday,
-            start_time__lte=time,
-            end_time__gt=time
+            day_of_week=weekday, start_time__lte=time, end_time__gt=time
         ).exists()
 
     def __str__(self):
@@ -150,32 +150,33 @@ class RewardPoints(models.Model):
 
     **Fields**
     - customer: FK to Customer who earned the points
-    - specialist: FK to Specialist who awarded the points  
+    - specialist: FK to Specialist who awarded the points
     - points: Integer amount of points awarded
     - created_at: Timestamp when points were awarded
     """
+
     customer = models.ForeignKey(
         Customer,
         on_delete=models.CASCADE,
-        related_name='reward_points',
-        help_text='Customer who earned these points'
+        related_name="reward_points",
+        help_text="Customer who earned these points",
     )
     specialist = models.ForeignKey(
-        Specialist, 
+        Specialist,
         on_delete=models.CASCADE,
-        related_name='awarded_points',
-        help_text='Specialist who awarded these points'
+        related_name="awarded_points",
+        help_text="Specialist who awarded these points",
     )
     points = models.IntegerField(
         validators=[MinValueValidator(1)],
-        help_text='Number of points awarded (minimum 1)'
+        help_text="Number of points awarded (minimum 1)",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name_plural = "Reward Points"
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
 
     def __str__(self):
         return f"{self.points} points from {self.specialist} to {self.customer}"
@@ -205,40 +206,37 @@ class DayAvailability(models.Model):
     SATURDAY = 6
 
     DAY_CHOICES = [
-        (SUNDAY, 'Sunday'),
-        (MONDAY, 'Monday'), 
-        (TUESDAY, 'Tuesday'),
-        (WEDNESDAY, 'Wednesday'),
-        (THURSDAY, 'Thursday'),
-        (FRIDAY, 'Friday'),
-        (SATURDAY, 'Saturday')
+        (SUNDAY, "Sunday"),
+        (MONDAY, "Monday"),
+        (TUESDAY, "Tuesday"),
+        (WEDNESDAY, "Wednesday"),
+        (THURSDAY, "Thursday"),
+        (FRIDAY, "Friday"),
+        (SATURDAY, "Saturday"),
     ]
 
     specialist = models.ForeignKey(
         Specialist,
         on_delete=models.CASCADE,
-        related_name='availabilities',
-        help_text='The specialist this availability belongs to'
+        related_name="availabilities",
+        help_text="The specialist this availability belongs to",
     )
     day_of_week = models.IntegerField(
-        choices=DAY_CHOICES,
-        help_text='Day of week (0=Sunday through 6=Saturday)'
+        choices=DAY_CHOICES, help_text="Day of week (0=Sunday through 6=Saturday)"
     )
     start_time = models.TimeField(
-        help_text='Time when specialist starts being available'
+        help_text="Time when specialist starts being available"
     )
-    end_time = models.TimeField(
-        help_text='Time when specialist stops being available'
-    )
+    end_time = models.TimeField(help_text="Time when specialist stops being available")
 
     class Meta:
-        verbose_name = 'Day Availability'
-        verbose_name_plural = 'Day Availabilities'
-        ordering = ['day_of_week', 'start_time']
+        verbose_name = "Day Availability"
+        verbose_name_plural = "Day Availabilities"
+        ordering = ["day_of_week", "start_time"]
         constraints = [
             models.CheckConstraint(
-                check=models.Q(start_time__lt=models.F('end_time')),
-                name='start_time_before_end_time'
+                check=models.Q(start_time__lt=models.F("end_time")),
+                name="start_time_before_end_time",
             )
         ]
 
@@ -261,7 +259,7 @@ class DayOff(models.Model):
     - date: Date of the day off
     - created_at: Timestamp when this record was created
     """
-    
+
     HOLIDAY = 0
     VACATION = 1
     SICK = 2
@@ -269,39 +267,32 @@ class DayOff(models.Model):
     OTHER = 4
 
     TYPE_CHOICES = [
-        (HOLIDAY, 'Holiday'),
-        (VACATION, 'Vacation'),
-        (SICK, 'Sick Leave'),
-        (PERSONAL, 'Personal'),
-        (OTHER, 'Other')
+        (HOLIDAY, "Holiday"),
+        (VACATION, "Vacation"),
+        (SICK, "Sick Leave"),
+        (PERSONAL, "Personal"),
+        (OTHER, "Other"),
     ]
 
     specialist = models.ForeignKey(
         Specialist,
         on_delete=models.CASCADE,
-        related_name='days_off',
-        help_text='The specialist taking the day off'
+        related_name="days_off",
+        help_text="The specialist taking the day off",
     )
-    type = models.IntegerField(
-        choices=TYPE_CHOICES,
-        help_text='Type of day off'
-    )
-    date = models.DateField(
-        help_text='Date of the day off'
-    )
+    type = models.IntegerField(choices=TYPE_CHOICES, help_text="Type of day off")
+    date = models.DateField(help_text="Date of the day off")
     created_at = models.DateTimeField(
-        auto_now_add=True,
-        help_text='When this day off was recorded'
+        auto_now_add=True, help_text="When this day off was recorded"
     )
 
     class Meta:
-        verbose_name = 'Day Off'
-        verbose_name_plural = 'Days Off'
-        ordering = ['-date']
+        verbose_name = "Day Off"
+        verbose_name_plural = "Days Off"
+        ordering = ["-date"]
         constraints = [
             models.UniqueConstraint(
-                fields=['specialist', 'date'],
-                name='unique_specialist_day_off'
+                fields=["specialist", "date"], name="unique_specialist_day_off"
             )
         ]
 
