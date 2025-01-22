@@ -43,7 +43,7 @@ class Service(models.Model):
     
     @property
     def images(self):
-        return self.ServiceImages.all()
+        return self.ServiceImages.all().order_by("order")
     
     @property
     def labels(self):
