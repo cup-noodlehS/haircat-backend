@@ -117,7 +117,7 @@ class Specialist(models.Model):
         CustomUser, on_delete=models.CASCADE, related_name="specialist"
     )
     bio = models.TextField(
-        blank=True, help_text="Specialist's biography and description"
+        blank=True, null=True, help_text="Specialist's biography and description"
     )
     point_to_php = models.FloatField(
         default=0.0,
