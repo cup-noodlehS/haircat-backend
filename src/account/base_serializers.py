@@ -48,6 +48,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class CustomerBaseSerializer(serializers.ModelSerializer):
     total_points = serializers.IntegerField(read_only=True)
+    user_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Customer
@@ -56,7 +57,8 @@ class CustomerBaseSerializer(serializers.ModelSerializer):
 
 class SpecialistBaseSerializer(serializers.ModelSerializer):
     is_available = serializers.BooleanField(read_only=True)
-    
+    user_id = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = Specialist
         fields = "__all__"

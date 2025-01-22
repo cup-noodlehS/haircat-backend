@@ -18,8 +18,8 @@ class UserSerializer(UserBaseSerializer):
 
 
 class CustomerSerializer(CustomerBaseSerializer):
-    user = UserSerializer()
+    user = UserSerializer(read_only=True)
 
 
 class SpecialistSerializer(SpecialistBaseSerializer):
-    user = UserSerializer()
+    user = UserSerializer(read_only=True)

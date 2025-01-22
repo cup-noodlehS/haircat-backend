@@ -40,6 +40,14 @@ class Service(models.Model):
     @property
     def specialist_location(self):
         return self.specialist.location
+    
+    @property
+    def images(self):
+        return self.ServiceImages.all()
+    
+    @property
+    def labels(self):
+        return self.ServiceLabels.all()
 
     def __str__(self):
         return self.name
