@@ -75,8 +75,8 @@ cd haircat-backend
 ### Setup virtual environment
 
 ```
-python3.10 -m venv .venv
-source .venv/bin/activate
+python3.10 -m venv venv
+source venv/bin/activate
 ```
 
 ### Install dependencies
@@ -118,7 +118,7 @@ pip install -r requirements.txt
 
 1. Activate virtual environment (once per session)
     ```
-    source .venv/bin/activate
+    source venv/bin/activate
     ```
     > to deactivate, run `deactivate`
 2. Run server
