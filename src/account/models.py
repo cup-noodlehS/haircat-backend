@@ -286,6 +286,10 @@ class DayOff(models.Model):
         auto_now_add=True, help_text="When this day off was recorded"
     )
 
+    @property
+    def type_display(self):
+        return dict(self.TYPE_CHOICES)[self.type]
+
     class Meta:
         verbose_name = "Day Off"
         verbose_name_plural = "Days Off"
@@ -297,4 +301,4 @@ class DayOff(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.specialist}'s {self.type} day off on {self.date}"
+        return f"{self.specialist}'s {self.type_display} day off on {self.date}"

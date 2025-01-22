@@ -6,6 +6,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class UserBaseSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(read_only=True)
     password = serializers.CharField(write_only=True, required=False)
+    is_specialist = serializers.BooleanField(read_only=True)
+    is_customer = serializers.BooleanField(read_only=True)
 
     def update(self, instance, validated_data):
         password = validated_data.pop("password", None)
@@ -25,6 +27,9 @@ class UserBaseSerializer(serializers.ModelSerializer):
             "date_joined",
             "phone_number",
             "full_name",
+            "pfp_url",
+            "is_specialist",
+            "is_customer",
         )
 
 
@@ -42,12 +47,16 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class CustomerBaseSerializer(serializers.ModelSerializer):
+    total_points = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Customer
         fields = "__all__"
 
 
 class SpecialistBaseSerializer(serializers.ModelSerializer):
+    is_available = serializers.BooleanField(read_only=True)
+    
     class Meta:
         model = Specialist
         fields = "__all__"
