@@ -74,6 +74,16 @@ class CustomUser(AbstractUser):
         """Check if user is a customer"""
         return hasattr(self, "customer")
 
+    @property
+    def specialist(self):
+        """Get specialist profile"""
+        return self.specialist
+
+    @property
+    def customer(self):
+        """Get customer profile"""
+        return self.customer
+
     def save(self, *args, **kwargs):
         if self.password and not self.password.startswith("pbkdf2_sha256$"):
             self.password = make_password(self.password)
