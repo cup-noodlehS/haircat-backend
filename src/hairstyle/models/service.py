@@ -78,3 +78,10 @@ class ServiceImage(models.Model):
 
     def __str__(self):
         return f"{self.service.name} - {self.image.name}"
+    
+    def save(self, *args, **kwargs):
+        self.order = self.service.images.count()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["order"]
