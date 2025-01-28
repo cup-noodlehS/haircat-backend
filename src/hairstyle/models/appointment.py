@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 
 from account.models import Customer
 from hairstyle.models.service import Service
+from general.models import File
 
 
 User = get_user_model()
@@ -59,8 +60,25 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def images(self):
+        return self.ReviewImages.all().order_by("order")
+
     def __str__(self):
         return f"{self.appointment.customer.user.full_name} - {self.appointment.service.name}"
+
+
+class ReviewImage(models.Model):
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="Images")
+    image = models.ForeignKey(
+        File, on_delete=models.CASCADE, related_name="ReviewImages"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    order = models.IntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        self.order = self.review.images.count()
+        super().save(*args, **kwargs)
 
 
 class Message(models.Model):

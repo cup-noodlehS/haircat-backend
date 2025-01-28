@@ -19,6 +19,7 @@ class ServiceLabelSimpleSerializer(ServiceLabelBaseSerializer):
 class ServiceImageSimpleSerializer(ServiceImageBaseSerializer):
     image = FileBaseSerializer(read_only=True)
 
+
 class ServiceSerializer(ServiceBaseSerializer):
     specialist = SpecialistSerializer(read_only=True)
     images = ServiceImageSimpleSerializer(read_only=True, many=True)
