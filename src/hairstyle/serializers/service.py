@@ -14,8 +14,8 @@ class SpecialistSerializer(SpecialistBaseSerializer):
 
 class ServiceSerializer(ServiceBaseSerializer):
     specialist = SpecialistSerializer(read_only=True)
-    images = FileBaseSerializer(read_only=True, many=True)
-    labels = LabelBaseSerializer(read_only=True, many=True)
+    images = ServiceImageBaseSerializer(read_only=True, many=True)
+    labels = ServiceLabelBaseSerializer(read_only=True, many=True)
 
 
 class ServiceLabelSerializer(ServiceLabelBaseSerializer):
