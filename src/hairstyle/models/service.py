@@ -11,6 +11,10 @@ class Label(models.Model):
 
     def __str__(self):
         return self.name
+    
+    @property
+    def total_services(self):
+        return self.ServiceLabels.count()
 
 
 class Service(models.Model):
@@ -40,11 +44,11 @@ class Service(models.Model):
     @property
     def specialist_location(self):
         return self.specialist.location
-    
+
     @property
     def images(self):
         return self.ServiceImages.all().order_by("order")
-    
+
     @property
     def labels(self):
         return self.ServiceLabels.all()
@@ -78,7 +82,7 @@ class ServiceImage(models.Model):
 
     def __str__(self):
         return f"{self.service.name} - {self.image.name}"
-    
+
     def save(self, *args, **kwargs):
         self.order = self.service.images.count()
         super().save(*args, **kwargs)
