@@ -22,6 +22,7 @@ class GenericView(viewsets.ViewSet):
     **Optional attributes**
     - allowed_methods: list of allowed methods (default: ['list', 'retrieve', 'create', 'update', 'delete'])
     - allowed_filter_fields: list of allowed filter fields (default: ['*'])
+    - allowed_update_fields: list of allowed update fields (default: ['*'])
     - size_per_request: number of objects to return per request (default: 20)
     - permission_classes: list of permission classes
     - cache_key_prefix: cache key prefix
@@ -47,6 +48,7 @@ class GenericView(viewsets.ViewSet):
     permission_classes = []  # list of permission classes
     allowed_methods = ["list", "create", "retrieve", "update", "delete"]
     allowed_filter_fields = ["*"]  # list of allowed filter fields
+    allowed_update_fields = ["*"]  # list of allowed update fields
 
     cache_key_prefix = None  # cache key prefix
     cache_duration = 60 * 60  # cache duration in seconds
@@ -114,6 +116,14 @@ class GenericView(viewsets.ViewSet):
 
         instance = get_object_or_404(self.queryset, pk=pk)
         self.pre_update(request, instance)
+
+        if "*" not in self.allowed_update_fields:
+            for field in request.data.keys():
+                if field not in self.allowed_update_fields:
+                    return Response(
+                        {"error": f"Field {field} is not allowed to update"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
 
         serializer = self.serializer_class(instance, data=request.data)
         if serializer.is_valid():
