@@ -1,6 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser
+from .models import (
+    CustomUser,
+    Customer,
+    Specialist,
+    RewardPoints,
+    DayAvailability,
+    DayOff,
+)
 
 
 @admin.register(CustomUser)
@@ -64,3 +71,45 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
+
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ("user", "total_points", "created_at", "updated_at")
+    search_fields = ("user__first_name", "user__last_name", "user__email")
+    readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(Specialist)
+class SpecialistAdmin(admin.ModelAdmin):
+    list_display = ("user", "point_to_php", "created_at", "updated_at")
+    search_fields = ("user__first_name", "user__last_name", "user__email", "bio")
+    readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(RewardPoints)
+class RewardPointsAdmin(admin.ModelAdmin):
+    list_display = ("customer", "specialist", "points", "created_at")
+    search_fields = (
+        "customer__user__first_name",
+        "customer__user__last_name",
+        "specialist__user__first_name",
+        "specialist__user__last_name",
+    )
+    readonly_fields = ("created_at",)
+    list_filter = ("created_at", "specialist")
+
+
+@admin.register(DayAvailability)
+class DayAvailabilityAdmin(admin.ModelAdmin):
+    list_display = ("specialist", "day_of_week_display", "start_time", "end_time")
+    list_filter = ("day_of_week", "specialist")
+    search_fields = ("specialist__user__first_name", "specialist__user__last_name")
+
+
+@admin.register(DayOff)
+class DayOffAdmin(admin.ModelAdmin):
+    list_display = ("specialist", "type_display", "date", "created_at")
+    list_filter = ("type", "date", "specialist")
+    search_fields = ("specialist__user__first_name", "specialist__user__last_name")
+    readonly_fields = ("created_at",)
