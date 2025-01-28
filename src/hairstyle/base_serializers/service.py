@@ -15,6 +15,8 @@ class ServiceBaseSerializer(serializers.ModelSerializer):
 
 
 class LabelBaseSerializer(serializers.ModelSerializer):
+    total_services = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Label
         fields = "__all__"
@@ -23,6 +25,7 @@ class LabelBaseSerializer(serializers.ModelSerializer):
 class ServiceLabelBaseSerializer(serializers.ModelSerializer):
     service_id = serializers.IntegerField(write_only=True)
     label_id = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = ServiceLabel
         fields = "__all__"
@@ -32,7 +35,7 @@ class ServiceImageBaseSerializer(serializers.ModelSerializer):
     service_id = serializers.IntegerField(write_only=True)
     image_id = serializers.IntegerField(write_only=True)
     order = serializers.IntegerField(read_only=True)
-    
+
     class Meta:
         model = ServiceImage
         fields = "__all__"

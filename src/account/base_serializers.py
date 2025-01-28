@@ -20,6 +20,7 @@ class SpecialistBaseSerializer(serializers.ModelSerializer):
         model = Specialist
         fields = "__all__"
 
+
 class UserBaseSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(read_only=True)
     password = serializers.CharField(write_only=True, required=False)
