@@ -12,10 +12,17 @@ class SpecialistSerializer(SpecialistBaseSerializer):
     user = UserBaseSerializer(read_only=True)
 
 
+class ServiceLabelSimpleSerializer(ServiceLabelBaseSerializer):
+    label = LabelBaseSerializer(read_only=True)
+
+
+class ServiceImageSimpleSerializer(ServiceImageBaseSerializer):
+    image = FileBaseSerializer(read_only=True)
+
 class ServiceSerializer(ServiceBaseSerializer):
     specialist = SpecialistSerializer(read_only=True)
-    images = ServiceImageBaseSerializer(read_only=True, many=True)
-    labels = ServiceLabelBaseSerializer(read_only=True, many=True)
+    images = ServiceImageSimpleSerializer(read_only=True, many=True)
+    labels = ServiceLabelSimpleSerializer(read_only=True, many=True)
 
 
 class ServiceLabelSerializer(ServiceLabelBaseSerializer):
