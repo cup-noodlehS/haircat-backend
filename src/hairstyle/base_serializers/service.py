@@ -18,3 +18,21 @@ class LabelBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label
         fields = "__all__"
+
+
+class ServiceLabelBaseSerializer(serializers.ModelSerializer):
+    service_id = serializers.IntegerField(write_only=True)
+    label_id = serializers.IntegerField(write_only=True)
+    class Meta:
+        model = ServiceLabel
+        fields = "__all__"
+
+
+class ServiceImageBaseSerializer(serializers.ModelSerializer):
+    service_id = serializers.IntegerField(write_only=True)
+    image_id = serializers.IntegerField(write_only=True)
+    order = serializers.IntegerField(read_only=True)
+    
+    class Meta:
+        model = ServiceImage
+        fields = "__all__"

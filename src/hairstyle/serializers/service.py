@@ -1,4 +1,4 @@
-from hairstyle.base_serializers.service import ServiceBaseSerializer, LabelBaseSerializer
+from hairstyle.base_serializers.service import ServiceBaseSerializer, LabelBaseSerializer, ServiceLabelBaseSerializer, ServiceImageBaseSerializer
 from account.base_serializers import SpecialistBaseSerializer, UserBaseSerializer
 from general.base_serializers import FileBaseSerializer
 
@@ -10,3 +10,13 @@ class ServiceSerializer(ServiceBaseSerializer):
     specialist = SpecialistSerializer(read_only=True)
     images = FileBaseSerializer(read_only=True, many=True)
     labels = LabelBaseSerializer(read_only=True, many=True)
+
+
+class ServiceLabelSerializer(ServiceLabelBaseSerializer):
+    service = ServiceBaseSerializer(read_only=True)
+    label = LabelBaseSerializer(read_only=True)
+
+
+class ServiceImageSerializer(ServiceImageBaseSerializer):
+    service = ServiceBaseSerializer(read_only=True)
+    image = FileBaseSerializer(read_only=True)
