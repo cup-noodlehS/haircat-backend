@@ -5,6 +5,8 @@ from hairstyle.views.service import (
     ServiceImageView,
     LabelView,
 )
+from hairstyle.views import AppointmentView
+
 
 urlpatterns = [
     path(
@@ -46,5 +48,15 @@ urlpatterns = [
         "labels/<int:pk>/",
         LabelView.as_view({"get": "retrieve", "delete": "destroy"}),
         name="label-detail",
+    ),
+    path(
+        "appointments/",
+        AppointmentView.as_view({"get": "list", "post": "create"}),
+        name="appointment-list",
+    ),
+    path(
+        "appointments/<int:pk>/",
+        AppointmentView.as_view({"get": "retrieve", "put": "update", "delete": "destroy"}),
+        name="appointment-detail",
     ),
 ]
