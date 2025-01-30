@@ -49,6 +49,9 @@ INSTALLED_APPS = [
     "hairstyle",
 ]
 
+# Custom user model
+AUTH_USER_MODEL = "account.CustomUser"
+
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -147,8 +150,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles/")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Custom user model
-AUTH_USER_MODEL = "account.CustomUser"
 
 # Rest framework settings
 REST_FRAMEWORK = {
