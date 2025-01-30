@@ -62,7 +62,7 @@ class Review(models.Model):
 
     @property
     def images(self):
-        return self.ReviewImages.all().order_by("order")
+        return self.Images.all().order_by("order")
 
     def __str__(self):
         return f"{self.appointment.customer.user.full_name} - {self.appointment.service.name}"
