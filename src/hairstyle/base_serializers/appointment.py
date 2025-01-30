@@ -28,3 +28,12 @@ class ReviewImageBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReviewImage
         fields = "__all__"
+
+
+class MessageBaseSerializer(serializers.ModelSerializer):
+    appointment_id = serializers.IntegerField(write_only=True)
+    sender_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = Message
+        fields = "__all__"
