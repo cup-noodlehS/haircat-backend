@@ -1,0 +1,53 @@
+name: Docker Build and Test
+
+# on:
+#     push:
+#         branches: ["**"] # Trigger on all branches
+#     pull_request: # Also trigger on pull requests
+
+env:
+    # AWS_REGION: us-east-1
+
+permissions:
+    contents: read
+
+jobs:
+    build-and-test:
+        name: Build and Test
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Delete .env file
+              run: |
+                  rm -f .env
+                  touch .env
+
+            - name: Create .env file
+              env:
+                  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+                  DB_NAME: ${{ secrets.DB_NAME }}
+                  DB_USER: ${{ secrets.DB_USER }}
+                  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+                  DB_HOST: ${{ secrets.DB_HOST }}
+                  DB_PORT: ${{ secrets.DB_PORT }}
+                  DEBUG: "False"
+              run: |
+                  echo "SECRET_KEY=${SECRET_KEY}" > .env
+                  echo "DB_NAME=${DB_NAME}" >> .env
+                  echo "DB_USER=${DB_USER}" >> .env
+                  echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
+                  echo "DB_HOST=${DB_HOST}" >> .env
+                  echo "DB_PORT=${DB_PORT}" >> .env
+                  echo "DEBUG=False" >> .env
+
+            - name: Build Docker image
+              run: |
+                  docker build -t tranches:test .
+
+            # Add your test commands here if needed
+            - name: Run tests
+              run: |
+                  docker run tranches:test python src/manage.py test
