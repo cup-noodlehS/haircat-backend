@@ -56,7 +56,9 @@ urlpatterns = [
     ),
     path(
         "appointments/<int:pk>/",
-        AppointmentView.as_view({"get": "retrieve", "put": "update", "delete": "destroy"}),
+        AppointmentView.as_view(
+            {"get": "retrieve", "put": "update", "delete": "destroy"}
+        ),
         name="appointment-detail",
     ),
     path(

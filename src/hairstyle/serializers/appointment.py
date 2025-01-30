@@ -1,5 +1,14 @@
-from hairstyle.base_serializers import AppointmentBaseSerializer, ServiceBaseSerializer, ReviewBaseSerializer, ReviewImageBaseSerializer
-from account.base_serializers import SpecialistBaseSerializer, CustomerBaseSerializer, UserBaseSerializer
+from hairstyle.base_serializers import (
+    AppointmentBaseSerializer,
+    ServiceBaseSerializer,
+    ReviewBaseSerializer,
+    ReviewImageBaseSerializer,
+)
+from account.base_serializers import (
+    SpecialistBaseSerializer,
+    CustomerBaseSerializer,
+    UserBaseSerializer,
+)
 from general.base_serializers import FileBaseSerializer, LocationBaseSerializer
 
 
@@ -13,12 +22,14 @@ class UserSerializer(UserBaseSerializer):
             "location",
         )
 
+
 class CustomerSerializer(CustomerBaseSerializer):
     user = UserSerializer(read_only=True)
 
 
 class SpecialistSerializer(SpecialistBaseSerializer):
     user = UserSerializer(read_only=True)
+
 
 class AppointmentSerializer(AppointmentBaseSerializer):
     customer = CustomerSerializer(read_only=True)

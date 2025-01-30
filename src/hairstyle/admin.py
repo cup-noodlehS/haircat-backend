@@ -56,36 +56,40 @@ class ServiceLabelAdmin(admin.ModelAdmin):
 class ReviewImageInline(admin.TabularInline):
     model = ReviewImage
     extra = 1
-    readonly_fields = ('order', 'created_at')
+    readonly_fields = ("order", "created_at")
 
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('appointment', 'rating', 'created_at')
-    list_filter = ('rating', 'created_at')
-    search_fields = ('appointment__customer__user__full_name', 'comment')
-    readonly_fields = ('created_at', 'updated_at')
+    list_display = ("appointment", "rating", "created_at")
+    list_filter = ("rating", "created_at")
+    search_fields = ("appointment__customer__user__full_name", "comment")
+    readonly_fields = ("created_at", "updated_at")
     inlines = [ReviewImageInline]
 
 
 @admin.register(ReviewImage)
 class ReviewImageAdmin(admin.ModelAdmin):
-    list_display = ('review', 'image', 'order', 'created_at')
-    list_filter = ('review', 'created_at')
-    readonly_fields = ('order', 'created_at')
+    list_display = ("review", "image", "order", "created_at")
+    list_filter = ("review", "created_at")
+    readonly_fields = ("order", "created_at")
 
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('appointment', 'sender', 'schedule_change_req', 'created_at')
-    list_filter = ('sender', 'created_at')
-    search_fields = ('message', 'sender__username', 'appointment__customer__user__full_name')
-    readonly_fields = ('created_at', 'updated_at')
+    list_display = ("appointment", "sender", "schedule_change_req", "created_at")
+    list_filter = ("sender", "created_at")
+    search_fields = (
+        "message",
+        "sender__username",
+        "appointment__customer__user__full_name",
+    )
+    readonly_fields = ("created_at", "updated_at")
 
 
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
-    list_display = ('customer', 'service', 'schedule', 'status', 'created_at')
-    list_filter = ('status', 'schedule', 'created_at')
-    search_fields = ('customer__user__full_name', 'service__name', 'notes')
-    readonly_fields = ('created_at', 'updated_at')
+    list_display = ("customer", "service", "schedule", "status", "created_at")
+    list_filter = ("status", "schedule", "created_at")
+    search_fields = ("customer__user__full_name", "service__name", "notes")
+    readonly_fields = ("created_at", "updated_at")
