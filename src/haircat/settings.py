@@ -89,23 +89,23 @@ WSGI_APPLICATION = "haircat.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME") or "haircat",
-        "USER": os.getenv("DB_USER") or "haircatuser",
-        "PASSWORD": os.getenv("DB_PASSWORD") or "password",
-        "HOST": os.getenv("DB_HOST") or "localhost",
-        "PORT": os.getenv("DB_PORT") or "5432",
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": os.getenv("DB_NAME") or "haircat",
+#         "USER": os.getenv("DB_USER") or "haircatuser",
+#         "PASSWORD": os.getenv("DB_PASSWORD") or "password",
+#         "HOST": os.getenv("DB_HOST") or "localhost",
+#         "PORT": os.getenv("DB_PORT") or "5432",
+#     }
+# }
 
 
 # Password validation
