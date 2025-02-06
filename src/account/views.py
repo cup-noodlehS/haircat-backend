@@ -8,8 +8,14 @@ from haircat.permissions import IsAuthenticated
 from haircat.utils import GenericView
 
 from .base_serializers import CustomTokenObtainPairSerializer, UserBaseSerializer
-from .serializers import UserSerializer, CustomerSerializer, SpecialistSerializer
-from .models import CustomUser, Customer, Specialist
+from .serializers import (
+    UserSerializer,
+    CustomerSerializer,
+    SpecialistSerializer,
+    DayAvailabilitySerializer,
+    DayOffSerializer,
+)
+from .models import CustomUser, Customer, Specialist, DayAvailability, DayOff
 
 
 class RegisterView(generics.CreateAPIView):
@@ -65,3 +71,15 @@ class SpecialistView(GenericView):
     permission_classes = [IsAuthenticated]
     queryset = Specialist.objects.all()
     serializer_class = SpecialistSerializer
+
+
+class DayAvailabilityView(GenericView):
+    permission_classes = [IsAuthenticated]
+    queryset = DayAvailability.objects.all()
+    serializer_class = DayAvailabilitySerializer
+
+
+class DayOffView(GenericView):
+    permission_classes = [IsAuthenticated]
+    queryset = DayOff.objects.all()
+    serializer_class = DayOffSerializer
