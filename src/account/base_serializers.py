@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from account.models import CustomUser, Customer, Specialist
+from account.models import CustomUser, Customer, Specialist, DayAvailability, DayOff
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
@@ -66,3 +66,21 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data["access"] = str(refresh.access_token)
         data["user"] = UserBaseSerializer(self.user).data
         return data
+
+
+class DayAvailabilityBaseSerializer(serializers.ModelSerializer):
+    specialist_id = serializers.IntegerField(write_only=True)
+    day_of_week_display = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = DayAvailability
+        fields = "__all__"
+
+
+class DayOffBaseSerializer(serializers.ModelSerializer):
+    specialist_id = serializers.IntegerField(write_only=True)
+    type_display = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = DayOff
+        fields = "__all__"

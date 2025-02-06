@@ -2,7 +2,7 @@ from hairstyle.serializers.appointment import (
     AppointmentSerializer,
     ReviewImageSerializer,
     ReviewSerializer,
-    MessageSerializer
+    MessageSerializer,
 )
 from hairstyle.models.appointment import Appointment, Review, ReviewImage, Message
 from haircat.utils import GenericView

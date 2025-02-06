@@ -2,6 +2,8 @@ from .base_serializers import (
     UserBaseSerializer,
     CustomerBaseSerializer,
     SpecialistBaseSerializer,
+    DayAvailabilityBaseSerializer,
+    DayOffBaseSerializer,
 )
 from general.base_serializers import FileBaseSerializer, LocationBaseSerializer
 
@@ -23,3 +25,11 @@ class CustomerSerializer(CustomerBaseSerializer):
 
 class SpecialistSerializer(SpecialistBaseSerializer):
     user = UserSerializer(read_only=True)
+
+
+class DayAvailabilitySerializer(DayAvailabilityBaseSerializer):
+    specialist = SpecialistSerializer(read_only=True)
+
+
+class DayOffSerializer(DayOffBaseSerializer):
+    specialist = SpecialistSerializer(read_only=True)
