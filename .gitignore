@@ -19,8 +19,8 @@ env.bak/
 staticfiles/
 media/
 local_settings.py
-# db.sqlite3
-# db.sqlite3-journal
+db.sqlite3
+db.sqlite3-journal
 
 # If you're using PostgreSQL:
 *.pgdata
