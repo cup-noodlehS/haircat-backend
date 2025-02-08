@@ -1,118 +1,80 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.contrib.auth.hashers import make_password
-from django.core.validators import RegexValidator, MinValueValidator
+from django.core.validators import MinValueValidator
 
-from general.models import File, Location
+from .custom_user import CustomUser
+from .customer import Customer
+from general.models import File
 
 
-class CustomUser(AbstractUser):
+class BarberShop(models.Model):
     """
-    **Required Fields:**
-    - first_name: CharField to store the first name of the user.
-    - last_name: CharField to store the last name of the user.
-    - password: CharField to store the password of the user.
-    - email: EmailField to store the email address of the user.
-    - username: CharField to store the username of the user.
-    - date_joined: Datetime field
-    - phone_number: Text field
-    - location: FK to Location
-    - pfp: FK to File
+    Represents a barber shop.
     """
 
-    groups = models.ManyToManyField(
-        "auth.Group",
-        related_name="custom_user_set",
-        blank=True,
-        help_text="The groups this user belongs to.",
-        verbose_name="groups",
-    )
-    user_permissions = models.ManyToManyField(
-        "auth.Permission",
-        related_name="custom_user_set",
-        blank=True,
-        help_text="Specific permissions for this user.",
-        verbose_name="user permissions",
-    )
+    name = models.CharField(max_length=255, help_text="Name of the barber shop")
 
-    phone_number = models.CharField(
-        max_length=15,
-        null=True,
-        blank=True,
-        validators=[
-            RegexValidator(
-                regex=r"^\+?1?\d{9,15}$",
-                message="Phone number must be entered in format: '+999999999'. Up to 15 digits allowed.",
-            )
-        ],
-    )
-    location = models.ForeignKey(
-        Location, null=True, blank=True, on_delete=models.SET_NULL
-    )
-    pfp = models.ForeignKey(File, null=True, blank=True, on_delete=models.SET_NULL)
+    @property
+    def images(self):
+        return self.images.all().order_by("order")
 
+    def __str__(self):
+        return self.name
+
+
+class BarberShopImage(models.Model):
+    barber_shop = models.ForeignKey(
+        BarberShop, on_delete=models.CASCADE, related_name="images"
+    )
+    image = models.ForeignKey(
+        File, on_delete=models.CASCADE, related_name="barber_shop_images"
+    )
+    order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
-    @property
-    def full_name(self):
-        return f"{self.first_name} {self.last_name}"
-
-    @property
-    def pfp_url(self):
-        if self.pfp:
-            return self.pfp.url
-        return None
-
-    @property
-    def is_specialist(self):
-        """Check if user is a specialist"""
-        return hasattr(self, "specialist")
-
-    @property
-    def is_customer(self):
-        """Check if user is a customer"""
-        return hasattr(self, "customer")
-
-    @property
-    def specialist(self):
-        """Get specialist profile"""
-        return self.specialist
-
-    @property
-    def customer(self):
-        """Get customer profile"""
-        return self.customer
+    def __str__(self):
+        return f"{self.barber_shop.name} - {self.image.name}"
 
     def save(self, *args, **kwargs):
-        if self.password and not self.password.startswith("pbkdf2_sha256$"):
-            self.password = make_password(self.password)
+        self.order = self.barber_shop.images.count()
         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return self.full_name
+    class Meta:
+        ordering = ["order"]
 
 
-class Customer(models.Model):
-    """
-    **Fields**
-    - user: FK to CustomUser
-    """
-
-    user = models.OneToOneField(
-        CustomUser, on_delete=models.CASCADE, related_name="customer"
+class Barber(models.Model):
+    barber_shop = models.ForeignKey(
+        BarberShop, on_delete=models.CASCADE, related_name="barbers"
     )
-
+    name = models.CharField(max_length=255, help_text="Name of the barber")
+    info = models.TextField(
+        blank=True, null=True, help_text="Information about the barber"
+    )
+    pfp = models.ForeignKey(
+        File,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="barber_pfps",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     @property
-    def total_points(self):
-        """Get total reward points for customer"""
-        return self.reward_points.aggregate(total=models.Sum("points"))["total"] or 0
+    def average_rating(self):
+        reviews = self.Appointments.exclude(Reviews__isnull=True).values_list(
+            "Reviews__rating", flat=True
+        )
+        if not reviews:
+            return 0
+        return round(sum(reviews) / len(reviews), 1)
+
+    @property
+    def reviews_count(self):
+        return self.Appointments.exclude(Reviews__isnull=True).count()
 
     def __str__(self):
-        return f"Customer - {self.user.full_name}"
+        return f"{self.barber_shop.name} - {self.name}"
 
 
 class Specialist(models.Model):
@@ -134,9 +96,39 @@ class Specialist(models.Model):
         validators=[MinValueValidator(0.0)],
         help_text="Conversion rate from points to PHP currency",
     )
+    google_maps_link = models.URLField(
+        blank=True,
+        null=True,
+        help_text="Google Maps link for the specialist's location",
+    )
+    barber_shop = models.OneToOneField(
+        BarberShop,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="specialists",
+        help_text="If user type is a barber shop",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def average_rating(self):
+        from hairstyle.models.appointment import Review
+
+        reviews = Review.objects.filter(
+            appointment__service__specialist=self
+        ).values_list("rating", flat=True)
+        if not reviews:
+            return 0
+        return round(sum(reviews) / len(reviews), 1)
+
+    @property
+    def reviews_count(self):
+        from hairstyle.models.appointment import Review
+
+        return Review.objects.filter(appointment__service__specialist=self).count()
 
     def is_available(self, date, time):
         """Check if specialist is available at given date/time"""

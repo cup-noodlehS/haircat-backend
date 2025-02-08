@@ -7,6 +7,9 @@ from .models import (
     RewardPoints,
     DayAvailability,
     DayOff,
+    BarberShop,
+    BarberShopImage,
+    Barber,
 )
 
 
@@ -82,7 +85,14 @@ class CustomerAdmin(admin.ModelAdmin):
 
 @admin.register(Specialist)
 class SpecialistAdmin(admin.ModelAdmin):
-    list_display = ("user", "point_to_php", "created_at", "updated_at")
+    list_display = (
+        "user",
+        "average_rating",
+        "reviews_count",
+        "point_to_php",
+        "created_at",
+        "updated_at",
+    )
     search_fields = ("user__first_name", "user__last_name", "user__email", "bio")
     readonly_fields = ("created_at", "updated_at")
 
@@ -113,3 +123,42 @@ class DayOffAdmin(admin.ModelAdmin):
     list_filter = ("type", "date", "specialist")
     search_fields = ("specialist__user__first_name", "specialist__user__last_name")
     readonly_fields = ("created_at",)
+
+
+class BarberShopImageInline(admin.TabularInline):
+    model = BarberShopImage
+    extra = 1
+
+
+class BarberInline(admin.TabularInline):
+    model = Barber
+    extra = 1
+
+
+@admin.register(BarberShop)
+class BarberShopAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    search_fields = ("name",)
+    inlines = [BarberShopImageInline, BarberInline]
+
+
+@admin.register(BarberShopImage)
+class BarberShopImageAdmin(admin.ModelAdmin):
+    list_display = ("barber_shop", "image", "order", "created_at")
+    list_filter = ("barber_shop",)
+    search_fields = ("barber_shop__name", "image__name")
+    ordering = ("barber_shop", "order")
+
+
+@admin.register(Barber)
+class BarberAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "barber_shop",
+        "average_rating",
+        "reviews_count",
+        "created_at",
+    )
+    list_filter = ("barber_shop", "created_at")
+    search_fields = ("name", "barber_shop__name")
+    readonly_fields = ("created_at", "updated_at")
