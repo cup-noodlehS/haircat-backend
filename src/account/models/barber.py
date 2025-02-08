@@ -50,9 +50,26 @@ class Barber(models.Model):
     info = models.TextField(
         blank=True, null=True, help_text="Information about the barber"
     )
-    pfp = models.ForeignKey(File, on_delete=models.CASCADE, related_name="barber_pfps")
+    pfp = models.ForeignKey(
+        File,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="barber_pfps",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def average_rating(self):
+        reviews = self.Appointments.exclude(Reviews__isnull=True).values_list('Reviews__rating', flat=True)
+        if not reviews:
+            return 0
+        return round(sum(reviews) / len(reviews), 1)
+
+    @property
+    def reviews_count(self):
+        return self.Appointments.exclude(Reviews__isnull=True).count()
 
     def __str__(self):
         return f"{self.barber_shop.name} - {self.name}"
