@@ -7,8 +7,20 @@ from account.models import (
     DayOff,
     BarberShop,
     BarberShopImage,
+    Barber,
 )
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+
+class BarberBaseSerializer(serializers.ModelSerializer):
+    pfp_id = serializers.IntegerField(write_only=True, required=False)
+    barber_shop_id = serializers.IntegerField(write_only=True)
+    average_rating = serializers.FloatField(read_only=True)
+    reviews_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Barber
+        fields = "__all__"
 
 
 class BarberShopBaseSerializer(serializers.ModelSerializer):
@@ -40,6 +52,8 @@ class SpecialistBaseSerializer(serializers.ModelSerializer):
     is_available = serializers.BooleanField(read_only=True)
     user_id = serializers.IntegerField(write_only=True)
     barber_shop_id = serializers.IntegerField(write_only=True)
+    average_rating = serializers.FloatField(read_only=True)
+    reviews_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Specialist

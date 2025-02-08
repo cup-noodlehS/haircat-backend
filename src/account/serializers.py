@@ -6,8 +6,14 @@ from .base_serializers import (
     DayOffBaseSerializer,
     BarberShopBaseSerializer,
     BarberShopImageBaseSerializer,
+    BarberBaseSerializer,
 )
 from general.base_serializers import FileBaseSerializer, LocationBaseSerializer
+
+
+class BarberSerializer(BarberBaseSerializer):
+    pfp = FileBaseSerializer(read_only=True)
+    barber_shop = BarberShopBaseSerializer(read_only=True)
 
 
 class BarberShopImageSimpleSerializer(BarberShopImageBaseSerializer):
