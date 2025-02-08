@@ -8,6 +8,7 @@ from .models import (
     DayAvailability,
     DayOff,
     BarberShop,
+    BarberShopImage,
 )
 
 
@@ -116,7 +117,21 @@ class DayOffAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at",)
 
 
+class BarberShopImageInline(admin.TabularInline):
+    model = BarberShopImage
+    extra = 1
+
+
 @admin.register(BarberShop)
 class BarberShopAdmin(admin.ModelAdmin):
     list_display = ("name",)
     search_fields = ("name",)
+    inlines = [BarberShopImageInline]
+
+
+@admin.register(BarberShopImage)
+class BarberShopImageAdmin(admin.ModelAdmin):
+    list_display = ('barber_shop', 'image', 'order', 'created_at')
+    list_filter = ('barber_shop',)
+    search_fields = ('barber_shop__name', 'image__name')
+    ordering = ('barber_shop', 'order')
