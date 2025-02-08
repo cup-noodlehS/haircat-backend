@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from account.models import Customer
 from hairstyle.models.service import Service
 from general.models import File
+from account.models import Barber
 
 
 User = get_user_model()
@@ -32,6 +33,13 @@ class Appointment(models.Model):
     schedule = models.DateTimeField()
     status = models.IntegerField(choices=STATUS_CHOICES, default=PENDING)
     notes = models.TextField(max_length=255, null=True, blank=True)
+    barber = models.ForeignKey(
+        Barber,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="Appointments",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
