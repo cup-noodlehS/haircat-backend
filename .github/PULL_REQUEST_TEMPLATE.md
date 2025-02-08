@@ -6,7 +6,7 @@
 
 -   [Notion task](paste link here)
 
-### Related MRs
+### Related PRs
 
 -   [MR1]()
 
