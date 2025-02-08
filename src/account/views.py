@@ -16,6 +16,7 @@ from .serializers import (
     DayOffSerializer,
     BarberShopSerializer,
     BarberShopImageSerializer,
+    BarberSerializer,
 )
 from .models import (
     CustomUser,
@@ -25,6 +26,7 @@ from .models import (
     DayOff,
     BarberShop,
     BarberShopImage,
+    Barber,
 )
 
 
@@ -106,3 +108,9 @@ class BarberShopImageView(GenericView):
     queryset = BarberShopImage.objects.all()
     serializer_class = BarberShopImageSerializer
     allowed_methods = ["list", "retrieve", "create", "delete"]
+
+
+class BarberView(GenericView):
+    permission_classes = [IsAuthenticated]
+    queryset = Barber.objects.all()
+    serializer_class = BarberSerializer

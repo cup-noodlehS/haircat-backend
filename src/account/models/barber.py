@@ -62,7 +62,9 @@ class Barber(models.Model):
 
     @property
     def average_rating(self):
-        reviews = self.Appointments.exclude(Reviews__isnull=True).values_list('Reviews__rating', flat=True)
+        reviews = self.Appointments.exclude(Reviews__isnull=True).values_list(
+            "Reviews__rating", flat=True
+        )
         if not reviews:
             return 0
         return round(sum(reviews) / len(reviews), 1)
@@ -114,9 +116,10 @@ class Specialist(models.Model):
     @property
     def average_rating(self):
         from hairstyle.models.appointment import Review
+
         reviews = Review.objects.filter(
             appointment__service__specialist=self
-        ).values_list('rating', flat=True)
+        ).values_list("rating", flat=True)
         if not reviews:
             return 0
         return round(sum(reviews) / len(reviews), 1)
@@ -124,6 +127,7 @@ class Specialist(models.Model):
     @property
     def reviews_count(self):
         from hairstyle.models.appointment import Review
+
         return Review.objects.filter(appointment__service__specialist=self).count()
 
     def is_available(self, date, time):
