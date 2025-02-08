@@ -1,6 +1,19 @@
 from rest_framework import serializers
-from account.models import CustomUser, Customer, Specialist, DayAvailability, DayOff
+from account.models import (
+    CustomUser,
+    Customer,
+    Specialist,
+    DayAvailability,
+    DayOff,
+    BarberShop,
+)
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+
+class BarberShopBaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BarberShop
+        fields = "__all__"
 
 
 class CustomerBaseSerializer(serializers.ModelSerializer):
@@ -15,6 +28,7 @@ class CustomerBaseSerializer(serializers.ModelSerializer):
 class SpecialistBaseSerializer(serializers.ModelSerializer):
     is_available = serializers.BooleanField(read_only=True)
     user_id = serializers.IntegerField(write_only=True)
+    barber_shop_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Specialist
@@ -26,6 +40,7 @@ class UserBaseSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False)
     is_specialist = serializers.BooleanField(read_only=True)
     is_customer = serializers.BooleanField(read_only=True)
+    is_barber_shop = serializers.BooleanField(read_only=True)
     specialist = SpecialistBaseSerializer(read_only=True)
     customer = CustomerBaseSerializer(read_only=True)
 

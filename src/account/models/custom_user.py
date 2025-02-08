@@ -63,7 +63,7 @@ class CustomUser(AbstractUser):
         if self.pfp:
             return self.pfp.url
         return None
-    
+
     @property
     def is_barber_shop(self):
         specialist = getattr(self, "specialist", None)
