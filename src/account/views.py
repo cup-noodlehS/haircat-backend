@@ -14,8 +14,9 @@ from .serializers import (
     SpecialistSerializer,
     DayAvailabilitySerializer,
     DayOffSerializer,
+    BarberShopSerializer,
 )
-from .models import CustomUser, Customer, Specialist, DayAvailability, DayOff
+from .models import CustomUser, Customer, Specialist, DayAvailability, DayOff, BarberShop
 
 
 class RegisterView(generics.CreateAPIView):
@@ -83,3 +84,9 @@ class DayOffView(GenericView):
     permission_classes = [IsAuthenticated]
     queryset = DayOff.objects.all()
     serializer_class = DayOffSerializer
+
+
+class BarberShopView(GenericView):
+    permission_classes = [IsAuthenticated]
+    queryset = BarberShop.objects.all()
+    serializer_class = BarberShopSerializer
