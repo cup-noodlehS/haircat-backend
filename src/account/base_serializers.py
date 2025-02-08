@@ -6,6 +6,7 @@ from account.models import (
     DayAvailability,
     DayOff,
     BarberShop,
+    BarberShopImage,
 )
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -13,6 +14,16 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class BarberShopBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = BarberShop
+        fields = "__all__"
+
+
+class BarberShopImageBaseSerializer(serializers.ModelSerializer):
+    barber_shop_id = serializers.IntegerField(write_only=True)
+    image_id = serializers.IntegerField(write_only=True)
+    order = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = BarberShopImage
         fields = "__all__"
 
 

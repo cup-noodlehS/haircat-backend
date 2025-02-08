@@ -5,9 +5,18 @@ from .base_serializers import (
     DayAvailabilityBaseSerializer,
     DayOffBaseSerializer,
     BarberShopBaseSerializer,
+    BarberShopImageBaseSerializer,
 )
 from general.base_serializers import FileBaseSerializer, LocationBaseSerializer
 
+
+class BarberShopImageSimpleSerializer(BarberShopImageBaseSerializer):
+    image = FileBaseSerializer(read_only=True)
+
+
+class BarberShopImageSerializer(BarberShopImageBaseSerializer):
+    image = FileBaseSerializer(read_only=True)
+    barber_shop = BarberShopBaseSerializer(read_only=True)
 
 class SpecialistSimpleSerializer(SpecialistBaseSerializer):
     barber_shop = BarberShopBaseSerializer(read_only=True)
@@ -46,4 +55,4 @@ class DayOffSerializer(DayOffBaseSerializer):
 
 
 class BarberShopSerializer(BarberShopBaseSerializer):
-    pass
+    images = BarberShopImageSimpleSerializer(read_only=True, many=True)
