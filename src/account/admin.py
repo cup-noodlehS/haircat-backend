@@ -85,7 +85,7 @@ class CustomerAdmin(admin.ModelAdmin):
 
 @admin.register(Specialist)
 class SpecialistAdmin(admin.ModelAdmin):
-    list_display = ("user", "point_to_php", "created_at", "updated_at")
+    list_display = ("user", "average_rating", "reviews_count", "point_to_php", "created_at", "updated_at")
     search_fields = ("user__first_name", "user__last_name", "user__email", "bio")
     readonly_fields = ("created_at", "updated_at")
 

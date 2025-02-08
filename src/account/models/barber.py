@@ -111,6 +111,21 @@ class Specialist(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def average_rating(self):
+        from hairstyle.models.appointment import Review
+        reviews = Review.objects.filter(
+            appointment__service__specialist=self
+        ).values_list('rating', flat=True)
+        if not reviews:
+            return 0
+        return round(sum(reviews) / len(reviews), 1)
+
+    @property
+    def reviews_count(self):
+        from hairstyle.models.appointment import Review
+        return Review.objects.filter(appointment__service__specialist=self).count()
+
     def is_available(self, date, time):
         """Check if specialist is available at given date/time"""
         # Skip if day off
