@@ -99,10 +99,7 @@ urlpatterns = [
     ),
     path(
         "barber-shop-images/<int:pk>/",
-        BarberShopImageView.as_view(
-            {"get": "retrieve", "delete": "destroy"}
-        ),
+        BarberShopImageView.as_view({"get": "retrieve", "delete": "destroy"}),
         name="barber-shop-image-detail",
     ),
-    
 ]

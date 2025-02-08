@@ -131,7 +131,7 @@ class BarberShopAdmin(admin.ModelAdmin):
 
 @admin.register(BarberShopImage)
 class BarberShopImageAdmin(admin.ModelAdmin):
-    list_display = ('barber_shop', 'image', 'order', 'created_at')
-    list_filter = ('barber_shop',)
-    search_fields = ('barber_shop__name', 'image__name')
-    ordering = ('barber_shop', 'order')
+    list_display = ("barber_shop", "image", "order", "created_at")
+    list_filter = ("barber_shop",)
+    search_fields = ("barber_shop__name", "image__name")
+    ordering = ("barber_shop", "order")

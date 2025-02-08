@@ -18,6 +18,7 @@ class BarberShopImageSerializer(BarberShopImageBaseSerializer):
     image = FileBaseSerializer(read_only=True)
     barber_shop = BarberShopBaseSerializer(read_only=True)
 
+
 class SpecialistSimpleSerializer(SpecialistBaseSerializer):
     barber_shop = BarberShopBaseSerializer(read_only=True)
 
