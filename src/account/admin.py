@@ -9,6 +9,7 @@ from .models import (
     DayOff,
     BarberShop,
     BarberShopImage,
+    Barber,
 )
 
 
@@ -122,11 +123,16 @@ class BarberShopImageInline(admin.TabularInline):
     extra = 1
 
 
+class BarberInline(admin.TabularInline):
+    model = Barber
+    extra = 1
+
+
 @admin.register(BarberShop)
 class BarberShopAdmin(admin.ModelAdmin):
     list_display = ("name",)
     search_fields = ("name",)
-    inlines = [BarberShopImageInline]
+    inlines = [BarberShopImageInline, BarberInline]
 
 
 @admin.register(BarberShopImage)
@@ -135,3 +141,11 @@ class BarberShopImageAdmin(admin.ModelAdmin):
     list_filter = ("barber_shop",)
     search_fields = ("barber_shop__name", "image__name")
     ordering = ("barber_shop", "order")
+
+
+@admin.register(Barber)
+class BarberAdmin(admin.ModelAdmin):
+    list_display = ('name', 'barber_shop', 'average_rating', 'reviews_count', 'created_at')
+    list_filter = ('barber_shop', 'created_at')
+    search_fields = ('name', 'barber_shop__name')
+    readonly_fields = ('created_at', 'updated_at')
