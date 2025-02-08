@@ -24,6 +24,11 @@ class Specialist(models.Model):
         validators=[MinValueValidator(0.0)],
         help_text="Conversion rate from points to PHP currency",
     )
+    google_maps_link = models.URLField(
+        blank=True,
+        null=True,
+        help_text="Google Maps link for the specialist's location",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
