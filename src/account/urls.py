@@ -86,7 +86,9 @@ urlpatterns = [
     ),
     path(
         "barber-shops/<int:pk>/",
-        BarberShopView.as_view({"get": "retrieve", "put": "update", "delete": "destroy"}),
+        BarberShopView.as_view(
+            {"get": "retrieve", "put": "update", "delete": "destroy"}
+        ),
         name="barber-shop-detail",
     ),
 ]

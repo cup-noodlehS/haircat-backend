@@ -16,7 +16,14 @@ from .serializers import (
     DayOffSerializer,
     BarberShopSerializer,
 )
-from .models import CustomUser, Customer, Specialist, DayAvailability, DayOff, BarberShop
+from .models import (
+    CustomUser,
+    Customer,
+    Specialist,
+    DayAvailability,
+    DayOff,
+    BarberShop,
+)
 
 
 class RegisterView(generics.CreateAPIView):
