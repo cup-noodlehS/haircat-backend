@@ -5,6 +5,17 @@ from .custom_user import CustomUser
 from .customer import Customer
 
 
+class BarberShop(models.Model):
+    """
+    Represents a barber shop.
+    """
+
+    name = models.CharField(max_length=255, help_text="Name of the barber shop")
+
+    def __str__(self):
+        return self.name
+
+
 class Specialist(models.Model):
     """
     **Fields**
@@ -28,6 +39,14 @@ class Specialist(models.Model):
         blank=True,
         null=True,
         help_text="Google Maps link for the specialist's location",
+    )
+    barber_shop = models.OneToOneField(
+        BarberShop,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="specialists",
+        help_text="If user type is a barber shop",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
