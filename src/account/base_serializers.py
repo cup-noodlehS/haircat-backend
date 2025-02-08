@@ -41,8 +41,6 @@ class UserBaseSerializer(serializers.ModelSerializer):
     is_specialist = serializers.BooleanField(read_only=True)
     is_customer = serializers.BooleanField(read_only=True)
     is_barber_shop = serializers.BooleanField(read_only=True)
-    specialist = SpecialistBaseSerializer(read_only=True)
-    customer = CustomerBaseSerializer(read_only=True)
 
     def update(self, instance, validated_data):
         password = validated_data.pop("password", None)
@@ -66,8 +64,6 @@ class UserBaseSerializer(serializers.ModelSerializer):
             "is_specialist",
             "is_barber_shop",
             "is_customer",
-            "specialist",
-            "customer",
         )
 
 

@@ -7,6 +7,7 @@ from .models import (
     RewardPoints,
     DayAvailability,
     DayOff,
+    BarberShop,
 )
 
 
@@ -113,3 +114,9 @@ class DayOffAdmin(admin.ModelAdmin):
     list_filter = ("type", "date", "specialist")
     search_fields = ("specialist__user__first_name", "specialist__user__last_name")
     readonly_fields = ("created_at",)
+
+
+@admin.register(BarberShop)
+class BarberShopAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    search_fields = ("name",)
