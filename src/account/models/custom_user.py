@@ -63,11 +63,20 @@ class CustomUser(AbstractUser):
         if self.pfp:
             return self.pfp.url
         return None
+    
+    @property
+    def is_barber_shop(self):
+        specialist = getattr(self, "specialist", None)
+        if specialist:
+            return specialist.barber_shop is not None
+        return False
 
     @property
     def is_specialist(self):
-        """Check if user is a specialist"""
-        return hasattr(self, "specialist")
+        specialist = getattr(self, "specialist", None)
+        if specialist:
+            return specialist.barber_shop is None
+        return False
 
     @property
     def is_customer(self):

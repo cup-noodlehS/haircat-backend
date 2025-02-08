@@ -49,6 +49,7 @@ class UserBaseSerializer(serializers.ModelSerializer):
             "full_name",
             "pfp_url",
             "is_specialist",
+            "is_barber_shop",
             "is_customer",
             "specialist",
             "customer",
