@@ -5,6 +5,7 @@ from .custom_user import CustomUser
 from .customer import Customer
 from general.models import File
 
+
 class BarberShop(models.Model):
     """
     Represents a barber shop.
@@ -21,20 +22,40 @@ class BarberShop(models.Model):
 
 
 class BarberShopImage(models.Model):
-    barber_shop = models.ForeignKey(BarberShop, on_delete=models.CASCADE, related_name="images")
-    image = models.ForeignKey(File, on_delete=models.CASCADE, related_name="barber_shop_images")
+    barber_shop = models.ForeignKey(
+        BarberShop, on_delete=models.CASCADE, related_name="images"
+    )
+    image = models.ForeignKey(
+        File, on_delete=models.CASCADE, related_name="barber_shop_images"
+    )
     order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.barber_shop.name} - {self.image.name}"
-    
+
     def save(self, *args, **kwargs):
         self.order = self.barber_shop.images.count()
         super().save(*args, **kwargs)
 
     class Meta:
         ordering = ["order"]
+
+
+class Barber(models.Model):
+    barber_shop = models.ForeignKey(
+        BarberShop, on_delete=models.CASCADE, related_name="barbers"
+    )
+    name = models.CharField(max_length=255, help_text="Name of the barber")
+    info = models.TextField(
+        blank=True, null=True, help_text="Information about the barber"
+    )
+    pfp = models.ForeignKey(File, on_delete=models.CASCADE, related_name="barber_pfps")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.barber_shop.name} - {self.name}"
 
 
 class Specialist(models.Model):
