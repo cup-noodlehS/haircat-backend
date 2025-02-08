@@ -3,7 +3,7 @@ from django.core.validators import MinValueValidator
 
 from .custom_user import CustomUser
 from .customer import Customer
-
+from general.models import File
 
 class BarberShop(models.Model):
     """
@@ -12,8 +12,29 @@ class BarberShop(models.Model):
 
     name = models.CharField(max_length=255, help_text="Name of the barber shop")
 
+    @property
+    def images(self):
+        return self.images.all().order_by("order")
+
     def __str__(self):
         return self.name
+
+
+class BarberShopImage(models.Model):
+    barber_shop = models.ForeignKey(BarberShop, on_delete=models.CASCADE, related_name="images")
+    image = models.ForeignKey(File, on_delete=models.CASCADE, related_name="barber_shop_images")
+    order = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.barber_shop.name} - {self.image.name}"
+    
+    def save(self, *args, **kwargs):
+        self.order = self.barber_shop.images.count()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["order"]
 
 
 class Specialist(models.Model):
