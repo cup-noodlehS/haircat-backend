@@ -37,7 +37,7 @@ class Appointment(models.Model):
         Barber,
         null=True,
         blank=True,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="Appointments",
     )
 

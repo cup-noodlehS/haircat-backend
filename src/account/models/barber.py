@@ -54,7 +54,7 @@ class Barber(models.Model):
         File,
         null=True,
         blank=True,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="barber_pfps",
     )
     created_at = models.DateTimeField(auto_now_add=True)
@@ -105,7 +105,7 @@ class Specialist(models.Model):
         BarberShop,
         null=True,
         blank=True,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="specialists",
         help_text="If user type is a barber shop",
     )
