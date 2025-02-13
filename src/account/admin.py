@@ -10,6 +10,7 @@ from .models import (
     BarberShop,
     BarberShopImage,
     Barber,
+    AppointmentTimeSlot,
 )
 
 
@@ -162,3 +163,10 @@ class BarberAdmin(admin.ModelAdmin):
     list_filter = ("barber_shop", "created_at")
     search_fields = ("name", "barber_shop__name")
     readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(AppointmentTimeSlot)
+class AppointmentTimeSlotAdmin(admin.ModelAdmin):
+    list_display = ('day_availability', 'start_time', 'end_time', 'is_available')
+    list_filter = ('is_available', 'day_availability__day_of_week')
+    search_fields = ('day_availability__specialist__user__full_name',)

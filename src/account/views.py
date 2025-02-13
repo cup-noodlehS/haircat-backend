@@ -17,6 +17,7 @@ from .serializers import (
     BarberShopSerializer,
     BarberShopImageSerializer,
     BarberSerializer,
+    AppointmentTimeSlotSerializer,
 )
 from .models import (
     CustomUser,
@@ -27,6 +28,7 @@ from .models import (
     BarberShop,
     BarberShopImage,
     Barber,
+    AppointmentTimeSlot,
 )
 
 
@@ -114,3 +116,9 @@ class BarberView(GenericView):
     permission_classes = [IsAuthenticated]
     queryset = Barber.objects.all()
     serializer_class = BarberSerializer
+
+
+class AppointmentTimeSlotView(GenericView):
+    permission_classes = [IsAuthenticated]
+    queryset = AppointmentTimeSlot.objects.all()
+    serializer_class = AppointmentTimeSlotSerializer
