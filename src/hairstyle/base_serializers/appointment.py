@@ -6,7 +6,7 @@ class AppointmentBaseSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(read_only=True)
     customer_id = serializers.IntegerField(write_only=True)
     service_id = serializers.IntegerField(write_only=True)
-    barber_id = serializers.IntegerField(write_only=True)
+    barber_id = serializers.IntegerField(write_only=True, required=False)
 
     class Meta:
         model = Appointment
