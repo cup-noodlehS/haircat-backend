@@ -1,6 +1,42 @@
 from rest_framework import serializers
-from account.models import CustomUser, Customer, Specialist
+from account.models import (
+    CustomUser,
+    Customer,
+    Specialist,
+    DayAvailability,
+    DayOff,
+    BarberShop,
+    BarberShopImage,
+    Barber,
+)
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+
+class BarberBaseSerializer(serializers.ModelSerializer):
+    pfp_id = serializers.IntegerField(write_only=True, required=False)
+    barber_shop_id = serializers.IntegerField(write_only=True)
+    average_rating = serializers.FloatField(read_only=True)
+    reviews_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Barber
+        fields = "__all__"
+
+
+class BarberShopBaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BarberShop
+        fields = "__all__"
+
+
+class BarberShopImageBaseSerializer(serializers.ModelSerializer):
+    barber_shop_id = serializers.IntegerField(write_only=True)
+    image_id = serializers.IntegerField(write_only=True)
+    order = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = BarberShopImage
+        fields = "__all__"
 
 
 class CustomerBaseSerializer(serializers.ModelSerializer):
@@ -15,6 +51,9 @@ class CustomerBaseSerializer(serializers.ModelSerializer):
 class SpecialistBaseSerializer(serializers.ModelSerializer):
     is_available = serializers.BooleanField(read_only=True)
     user_id = serializers.IntegerField(write_only=True)
+    barber_shop_id = serializers.IntegerField(write_only=True, required=False)
+    average_rating = serializers.FloatField(read_only=True)
+    reviews_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Specialist
@@ -26,8 +65,7 @@ class UserBaseSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False)
     is_specialist = serializers.BooleanField(read_only=True)
     is_customer = serializers.BooleanField(read_only=True)
-    specialist = SpecialistBaseSerializer(read_only=True)
-    customer = CustomerBaseSerializer(read_only=True)
+    is_barber_shop = serializers.BooleanField(read_only=True)
 
     def update(self, instance, validated_data):
         password = validated_data.pop("password", None)
@@ -49,9 +87,8 @@ class UserBaseSerializer(serializers.ModelSerializer):
             "full_name",
             "pfp_url",
             "is_specialist",
+            "is_barber_shop",
             "is_customer",
-            "specialist",
-            "customer",
         )
 
 
@@ -66,3 +103,21 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data["access"] = str(refresh.access_token)
         data["user"] = UserBaseSerializer(self.user).data
         return data
+
+
+class DayAvailabilityBaseSerializer(serializers.ModelSerializer):
+    specialist_id = serializers.IntegerField(write_only=True)
+    day_of_week_display = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = DayAvailability
+        fields = "__all__"
+
+
+class DayOffBaseSerializer(serializers.ModelSerializer):
+    specialist_id = serializers.IntegerField(write_only=True)
+    type_display = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = DayOff
+        fields = "__all__"

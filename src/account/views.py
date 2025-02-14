@@ -8,8 +8,26 @@ from haircat.permissions import IsAuthenticated
 from haircat.utils import GenericView
 
 from .base_serializers import CustomTokenObtainPairSerializer, UserBaseSerializer
-from .serializers import UserSerializer, CustomerSerializer, SpecialistSerializer
-from .models import CustomUser, Customer, Specialist
+from .serializers import (
+    UserSerializer,
+    CustomerSerializer,
+    SpecialistSerializer,
+    DayAvailabilitySerializer,
+    DayOffSerializer,
+    BarberShopSerializer,
+    BarberShopImageSerializer,
+    BarberSerializer,
+)
+from .models import (
+    CustomUser,
+    Customer,
+    Specialist,
+    DayAvailability,
+    DayOff,
+    BarberShop,
+    BarberShopImage,
+    Barber,
+)
 
 
 class RegisterView(generics.CreateAPIView):
@@ -65,3 +83,34 @@ class SpecialistView(GenericView):
     permission_classes = [IsAuthenticated]
     queryset = Specialist.objects.all()
     serializer_class = SpecialistSerializer
+
+
+class DayAvailabilityView(GenericView):
+    permission_classes = [IsAuthenticated]
+    queryset = DayAvailability.objects.all()
+    serializer_class = DayAvailabilitySerializer
+
+
+class DayOffView(GenericView):
+    permission_classes = [IsAuthenticated]
+    queryset = DayOff.objects.all()
+    serializer_class = DayOffSerializer
+
+
+class BarberShopView(GenericView):
+    permission_classes = [IsAuthenticated]
+    queryset = BarberShop.objects.all()
+    serializer_class = BarberShopSerializer
+
+
+class BarberShopImageView(GenericView):
+    permission_classes = [IsAuthenticated]
+    queryset = BarberShopImage.objects.all()
+    serializer_class = BarberShopImageSerializer
+    allowed_methods = ["list", "retrieve", "create", "delete"]
+
+
+class BarberView(GenericView):
+    permission_classes = [IsAuthenticated]
+    queryset = Barber.objects.all()
+    serializer_class = BarberSerializer
