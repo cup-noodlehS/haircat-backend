@@ -267,7 +267,6 @@ class DayAvailability(models.Model):
                     start_time=slot_data['start_time'],
                     end_time=slot_data['end_time']
                 )
-                slot.full_clean()  # Validate before saving
                 slot.save()
                 created_slots.append(slot)
             except ValidationError as e:
