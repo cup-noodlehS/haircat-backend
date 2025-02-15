@@ -8,6 +8,7 @@ from account.models import (
     BarberShop,
     BarberShopImage,
     Barber,
+    AppointmentTimeSlot,
 )
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -120,4 +121,12 @@ class DayOffBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DayOff
+        fields = "__all__"
+
+
+class AppointmentTimeSlotBaseSerializer(serializers.ModelSerializer):
+    day_availability_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = AppointmentTimeSlot
         fields = "__all__"

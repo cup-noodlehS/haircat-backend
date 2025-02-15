@@ -13,6 +13,7 @@ from .views import (
     BarberShopView,
     BarberShopImageView,
     BarberView,
+    AppointmentTimeSlotView,
 )
 from .throttling import UserLoginRateThrottle
 from rest_framework.throttling import AnonRateThrottle
@@ -112,5 +113,17 @@ urlpatterns = [
         "barbers/<int:pk>/",
         BarberView.as_view({"get": "retrieve", "put": "update", "delete": "destroy"}),
         name="barber-detail",
+    ),
+    path(
+        "appointment-time-slots/",
+        AppointmentTimeSlotView.as_view({"get": "list", "post": "create"}),
+        name="appointment-time-slot-list",
+    ),
+    path(
+        "appointment-time-slots/<int:pk>/",
+        AppointmentTimeSlotView.as_view(
+            {"get": "retrieve", "put": "update", "delete": "destroy"}
+        ),
+        name="appointment-time-slot-detail",
     ),
 ]
