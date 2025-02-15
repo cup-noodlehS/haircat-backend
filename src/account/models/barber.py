@@ -250,6 +250,126 @@ class DayAvailability(models.Model):
     def __str__(self):
         return f"{self.specialist}'s availability on {self.day_of_week_display}"
 
+    def create_time_slots(self, slots_data):
+        """
+        Create multiple time slots for this day availability.
+        
+        Args:
+            slots_data: List of dicts with start_time and end_time
+        """
+        from django.core.exceptions import ValidationError
+        
+        created_slots = []
+        for slot_data in slots_data:
+            try:
+                slot = AppointmentTimeSlot(
+                    day_availability=self,
+                    start_time=slot_data['start_time'],
+                    end_time=slot_data['end_time']
+                )
+                slot.save()
+                created_slots.append(slot)
+            except ValidationError as e:
+                # Roll back any created slots
+                for created_slot in created_slots:
+                    created_slot.delete()
+                raise ValidationError(f"Invalid time slot: {e}")
+        
+        return created_slots
+
+    def get_available_slots(self, date=None):
+        """
+        Get all available time slots for this day availability.
+        
+        Args:
+            date: Optional specific date to check availability
+        """
+        slots = self.time_slots.filter(is_available=True)
+        if date:
+            # Add additional date-specific filtering if needed
+            pass
+        return slots.order_by('start_time')
+
+
+class AppointmentTimeSlot(models.Model):
+    """
+    Represents a specific time slot for appointments within a day's availability.
+
+    **Fields**
+    - day_availability: FK to DayAvailability this slot belongs to
+    - start_time: Time when the appointment slot starts
+    - end_time: Time when the appointment slot ends
+    - is_available: Boolean indicating if the slot is still available
+    - created_at: Timestamp when this slot was created
+    """
+
+    day_availability = models.ForeignKey(
+        DayAvailability,
+        on_delete=models.CASCADE,
+        related_name="time_slots",
+        help_text="The day availability this time slot belongs to",
+    )
+    start_time = models.TimeField(
+        help_text="Time when the appointment slot starts"
+    )
+    end_time = models.TimeField(
+        help_text="Time when the appointment slot ends"
+    )
+    is_available = models.BooleanField(
+        default=True,
+        help_text="Whether this time slot is available for booking"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text="When this time slot was created"
+    )
+
+    class Meta:
+        verbose_name = "Appointment Time Slot"
+        verbose_name_plural = "Appointment Time Slots"
+        ordering = ["start_time"]
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(start_time__lt=models.F("end_time")),
+                name="appointment_start_before_end",
+            ),
+            # Prevent overlapping time slots for the same day availability
+            models.UniqueConstraint(
+                fields=['day_availability', 'start_time', 'end_time'],
+                name='unique_time_slot'
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.day_availability}'s slot: {self.start_time}-{self.end_time}"
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        # Check if the time slot is within the day availability's time range
+        if (self.start_time < self.day_availability.start_time or 
+            self.end_time > self.day_availability.end_time):
+            raise ValidationError(
+                "Time slot must be within the day availability's time range"
+            )
+        
+        # Check for overlapping slots
+        overlapping = AppointmentTimeSlot.objects.filter(
+            day_availability=self.day_availability,
+            start_time__lt=self.end_time,
+            end_time__gt=self.start_time
+        )
+        if self.pk:  # If updating existing slot
+            overlapping = overlapping.exclude(pk=self.pk)
+        
+        if overlapping.exists():
+            raise ValidationError(
+                "This time slot overlaps with an existing slot"
+            )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
 
 class DayOff(models.Model):
     """

@@ -7,6 +7,7 @@ from .base_serializers import (
     BarberShopBaseSerializer,
     BarberShopImageBaseSerializer,
     BarberBaseSerializer,
+    AppointmentTimeSlotBaseSerializer,
 )
 from general.base_serializers import FileBaseSerializer, LocationBaseSerializer
 
@@ -63,3 +64,7 @@ class DayOffSerializer(DayOffBaseSerializer):
 
 class BarberShopSerializer(BarberShopBaseSerializer):
     images = BarberShopImageSimpleSerializer(read_only=True, many=True)
+
+
+class AppointmentTimeSlotSerializer(AppointmentTimeSlotBaseSerializer):
+    day_availability = DayAvailabilitySerializer(read_only=True)
