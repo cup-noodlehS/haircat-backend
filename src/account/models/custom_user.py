@@ -100,3 +100,6 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.full_name
+
+    class Meta:
+        app_label = 'account'
