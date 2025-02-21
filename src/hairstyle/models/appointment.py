@@ -54,6 +54,12 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"{self.customer.user.full_name} - {self.service.name}"
+    
+    def save(self, *args, **kwargs):
+        specialist = self.service.specialist
+        if specialist.auto_accept_appointment and self.status == self.PENDING:
+            self.status = self.CONFIRMED
+        super().save(*args, **kwargs)
 
 
 class Review(models.Model):

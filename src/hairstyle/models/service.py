@@ -54,7 +54,10 @@ class Service(models.Model):
         return self.ServiceLabels.all()
 
     def __str__(self):
-        return self.name
+        user = self.specialist.user.full_name
+        if self.specialist.barber_shop:
+            user = self.specialist.barber_shop.name
+        return f"{user} - {self.name}"
 
 
 class ServiceLabel(models.Model):
