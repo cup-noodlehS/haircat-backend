@@ -109,6 +109,10 @@ class Specialist(models.Model):
         related_name="specialists",
         help_text="If user type is a barber shop",
     )
+    auto_accept_appointment = models.BooleanField(
+        default=False,
+        help_text="If the specialist should automatically accept appointments",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
