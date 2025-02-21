@@ -219,7 +219,7 @@ class GenericView(viewsets.ViewSet):
         for key, value in request.query_params.items():
             if key.startswith("exclude__"):
                 parsed_value = parse_value(value)
-                excludes[key[8:]] = parsed_value
+                excludes[key[9:]] = parsed_value
             else:
                 if (
                     key in self.allowed_filter_fields
