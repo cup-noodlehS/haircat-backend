@@ -21,8 +21,10 @@ class CustomUserAdmin(UserAdmin):
         "email",
         "full_name",
         "phone_number",
-        "location",
         "is_staff",
+        "is_specialist",
+        "is_barber_shop",
+        "is_customer",
     )
     list_filter = ("is_staff", "is_superuser", "is_active", "location")
     search_fields = ("username", "first_name", "last_name", "email", "phone_number")

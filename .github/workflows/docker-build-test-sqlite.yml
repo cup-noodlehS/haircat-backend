@@ -1,0 +1,42 @@
+name: Docker Build and Test SQLite
+
+on:
+    push:
+    pull_request:
+
+permissions:
+    contents: read
+
+jobs:
+    build-and-test:
+        name: Build and Test
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Delete .env file
+              run: |
+                  rm -f .env
+                  touch .env
+
+            - name: Create .env file
+              env:
+                  SECRET_KEY: "Test"
+                  DEBUG: "False"
+              run: |
+                  echo "SECRET_KEY=${SECRET_KEY}" > .env
+                  echo "DEBUG=False" >> .env
+
+            - name: Build Docker image
+              run: |
+                  docker build -t haircat:test .
+
+            - name: Run Migrations
+              run: |
+                  docker run haircat:test python src/manage.py migrate
+
+            - name: Run tests
+              run: |
+                  docker run haircat:test python src/manage.py test
