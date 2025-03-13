@@ -440,6 +440,10 @@ class QnaQuestion(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def answer_message(self):
+        return self.answer.message if hasattr(self, "answer") else ''
+
     def __str__(self):
         return f"{self.user} asked {self.specialist}: {self.message}"
 

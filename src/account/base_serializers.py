@@ -9,6 +9,8 @@ from account.models import (
     BarberShopImage,
     Barber,
     AppointmentTimeSlot,
+    QnaAnswer,
+    QnaQuestion,
 )
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -129,4 +131,21 @@ class AppointmentTimeSlotBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AppointmentTimeSlot
+        fields = "__all__"
+
+
+class QnaQuestionBaseSerializer(serializers.ModelSerializer):
+    specialist_id = serializers.IntegerField(write_only=True)
+    answer_message = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = QnaQuestion
+        fields = "__all__"
+
+
+class QnaAnswerBaseSerializer(serializers.ModelSerializer):
+    question_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = QnaAnswer
         fields = "__all__"
