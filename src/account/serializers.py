@@ -8,6 +8,8 @@ from .base_serializers import (
     BarberShopImageBaseSerializer,
     BarberBaseSerializer,
     AppointmentTimeSlotBaseSerializer,
+    QnaAnswerBaseSerializer,
+    QnaQuestionBaseSerializer
 )
 from general.base_serializers import FileBaseSerializer, LocationBaseSerializer
 
@@ -68,3 +70,11 @@ class BarberShopSerializer(BarberShopBaseSerializer):
 
 class AppointmentTimeSlotSerializer(AppointmentTimeSlotBaseSerializer):
     day_availability = DayAvailabilitySerializer(read_only=True)
+
+
+class QnaQuestionSerializer(QnaQuestionBaseSerializer):
+    user = UserSerializer(read_only=True)
+
+
+class QnaAnswerSerializer(QnaAnswerBaseSerializer):
+    question = QnaQuestionBaseSerializer(read_only=True)

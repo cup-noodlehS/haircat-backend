@@ -428,3 +428,33 @@ class DayOff(models.Model):
 
     def __str__(self):
         return f"{self.specialist}'s {self.type_display} day off on {self.date}"
+
+
+class QnaQuestion(models.Model):
+    message = models.TextField(max_length=100, help_text="Question message")
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name="qna_questions"
+    )
+    specialist = models.ForeignKey(
+        Specialist, on_delete=models.CASCADE, related_name="qna_questions"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def answer_message(self):
+        return self.answer.message if hasattr(self, "answer") else ''
+
+    def __str__(self):
+        return f"{self.user} asked {self.specialist}: {self.message}"
+
+
+class QnaAnswer(models.Model):
+    message = models.TextField(max_length=100, help_text="Answer message")
+    question = models.OneToOneField(
+        QnaQuestion, on_delete=models.CASCADE, related_name="answer"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.question.user} asked {self.question.specialist}: {self.message}"

@@ -18,6 +18,8 @@ from .serializers import (
     BarberShopImageSerializer,
     BarberSerializer,
     AppointmentTimeSlotSerializer,
+    QnaAnswerSerializer,
+    QnaQuestionSerializer,
 )
 from .models import (
     CustomUser,
@@ -29,6 +31,8 @@ from .models import (
     BarberShopImage,
     Barber,
     AppointmentTimeSlot,
+    QnaAnswer,
+    QnaQuestion,
 )
 
 
@@ -122,3 +126,16 @@ class AppointmentTimeSlotView(GenericView):
     permission_classes = [IsAuthenticated]
     queryset = AppointmentTimeSlot.objects.all()
     serializer_class = AppointmentTimeSlotSerializer
+
+
+class QnaAnswerView(GenericView):
+    permission_classes = [IsAuthenticated]
+    queryset = QnaAnswer.objects.all()
+    serializer_class = QnaAnswerSerializer
+
+
+class QnaQuestionView(GenericView):
+    permission_classes = [IsAuthenticated]
+    queryset = QnaQuestion.objects.all()
+    serializer_class = QnaQuestionSerializer
+    allowed_methods = ["list", "retrieve", "create", "delete"]
