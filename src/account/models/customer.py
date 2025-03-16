@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from .custom_user import CustomUser
 
@@ -20,6 +21,10 @@ class Customer(models.Model):
     def total_points(self):
         """Get total reward points for customer"""
         return self.reward_points.aggregate(total=models.Sum("points"))["total"] or 0
+
+    @property
+    def has_active_appointment(self):
+        return self.Appointments.filter(schedule__gte=timezone.now()).exists()
 
     def __str__(self):
         return f"Customer - {self.user.full_name}"

@@ -44,6 +44,7 @@ class BarberShopImageBaseSerializer(serializers.ModelSerializer):
 
 class CustomerBaseSerializer(serializers.ModelSerializer):
     total_points = serializers.IntegerField(read_only=True)
+    has_active_appointment = serializers.BooleanField(read_only=True)
     user_id = serializers.IntegerField(write_only=True)
 
     class Meta:
