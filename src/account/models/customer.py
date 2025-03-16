@@ -3,7 +3,6 @@ from django.utils import timezone
 
 from .custom_user import CustomUser
 
-
 class Customer(models.Model):
     """
     **Fields**
@@ -24,7 +23,7 @@ class Customer(models.Model):
 
     @property
     def has_active_appointment(self):
-        return self.Appointments.filter(schedule__gte=timezone.now()).exists()
+        return self.Appointments.filter(schedule__gte=timezone.now()).exclude(status=3).exists()
 
     def __str__(self):
         return f"Customer - {self.user.full_name}"
