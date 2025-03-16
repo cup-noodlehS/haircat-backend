@@ -88,6 +88,11 @@ class CustomerAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "updated_at")
 
 
+class DayAvailabilityInline(admin.TabularInline):
+    model = DayAvailability
+    extra = 1
+
+
 @admin.register(Specialist)
 class SpecialistAdmin(admin.ModelAdmin):
     list_display = (
@@ -100,6 +105,27 @@ class SpecialistAdmin(admin.ModelAdmin):
     )
     search_fields = ("user__first_name", "user__last_name", "user__email", "bio")
     readonly_fields = ("created_at", "updated_at")
+    inlines = [DayAvailabilityInline]
+
+
+class AppointmentTimeSlotInline(admin.TabularInline):
+    model = AppointmentTimeSlot
+    extra = 1
+
+@admin.register(DayAvailability)
+class DayAvailabilityAdmin(admin.ModelAdmin):
+    list_display = ("specialist", "day_of_week_display", "start_time", "end_time")
+    list_filter = ("day_of_week", "specialist")
+    search_fields = ("specialist__user__first_name", "specialist__user__last_name")
+    inlines = [AppointmentTimeSlotInline]
+
+
+@admin.register(AppointmentTimeSlot)
+class AppointmentTimeSlotAdmin(admin.ModelAdmin):
+    list_display = ('day_availability', 'start_time', 'end_time')
+    list_filter = ('day_availability__day_of_week',)
+    search_fields = ('day_availability__specialist__user__full_name',)
+
 
 
 @admin.register(RewardPoints)
@@ -113,13 +139,6 @@ class RewardPointsAdmin(admin.ModelAdmin):
     )
     readonly_fields = ("created_at",)
     list_filter = ("created_at", "specialist")
-
-
-@admin.register(DayAvailability)
-class DayAvailabilityAdmin(admin.ModelAdmin):
-    list_display = ("specialist", "day_of_week_display", "start_time", "end_time")
-    list_filter = ("day_of_week", "specialist")
-    search_fields = ("specialist__user__first_name", "specialist__user__last_name")
 
 
 @admin.register(DayOff)
@@ -167,13 +186,6 @@ class BarberAdmin(admin.ModelAdmin):
     list_filter = ("barber_shop", "created_at")
     search_fields = ("name", "barber_shop__name")
     readonly_fields = ("created_at", "updated_at")
-
-
-@admin.register(AppointmentTimeSlot)
-class AppointmentTimeSlotAdmin(admin.ModelAdmin):
-    list_display = ('day_availability', 'start_time', 'end_time', 'is_available')
-    list_filter = ('is_available', 'day_availability__day_of_week')
-    search_fields = ('day_availability__specialist__user__full_name',)
 
 
 

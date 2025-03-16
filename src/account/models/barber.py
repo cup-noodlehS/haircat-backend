@@ -281,19 +281,6 @@ class DayAvailability(models.Model):
         
         return created_slots
 
-    def get_available_slots(self, date=None):
-        """
-        Get all available time slots for this day availability.
-        
-        Args:
-            date: Optional specific date to check availability
-        """
-        slots = self.time_slots.filter(is_available=True)
-        if date:
-            # Add additional date-specific filtering if needed
-            pass
-        return slots.order_by('start_time')
-
 
 class AppointmentTimeSlot(models.Model):
     """
@@ -303,7 +290,6 @@ class AppointmentTimeSlot(models.Model):
     - day_availability: FK to DayAvailability this slot belongs to
     - start_time: Time when the appointment slot starts
     - end_time: Time when the appointment slot ends
-    - is_available: Boolean indicating if the slot is still available
     - created_at: Timestamp when this slot was created
     """
 
@@ -319,10 +305,7 @@ class AppointmentTimeSlot(models.Model):
     end_time = models.TimeField(
         help_text="Time when the appointment slot ends"
     )
-    is_available = models.BooleanField(
-        default=True,
-        help_text="Whether this time slot is available for booking"
-    )
+
     created_at = models.DateTimeField(
         auto_now_add=True,
         help_text="When this time slot was created"
