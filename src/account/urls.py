@@ -14,6 +14,8 @@ from .views import (
     BarberShopImageView,
     BarberView,
     AppointmentTimeSlotView,
+    QnaAnswerView,
+    QnaQuestionView,
 )
 from .throttling import UserLoginRateThrottle
 from rest_framework.throttling import AnonRateThrottle
@@ -125,5 +127,29 @@ urlpatterns = [
             {"get": "retrieve", "put": "update", "delete": "destroy"}
         ),
         name="appointment-time-slot-detail",
+    ),
+    path(
+        "qna-questions/",
+        QnaQuestionView.as_view({"get": "list", "post": "create"}),
+        name="qna-question-list",
+    ),
+    path(
+        "qna-questions/<int:pk>/",
+        QnaQuestionView.as_view(
+            {"get": "retrieve", "delete": "destroy"}
+        ),
+        name="qna-question-detail",
+    ),
+    path(
+        "qna-answers/",
+        QnaAnswerView.as_view({"get": "list", "post": "create"}),
+        name="qna-answer-list",
+    ),
+    path(
+        "qna-answers/<int:pk>/",
+        QnaAnswerView.as_view(
+            {"get": "retrieve", "put": "update", "delete": "destroy"}
+        ),
+        name="qna-answer-detail",
     ),
 ]

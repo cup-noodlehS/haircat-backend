@@ -11,6 +11,8 @@ from .models import (
     BarberShopImage,
     Barber,
     AppointmentTimeSlot,
+    QnaQuestion,
+    QnaAnswer,
 )
 
 
@@ -172,3 +174,20 @@ class AppointmentTimeSlotAdmin(admin.ModelAdmin):
     list_display = ('day_availability', 'start_time', 'end_time', 'is_available')
     list_filter = ('is_available', 'day_availability__day_of_week')
     search_fields = ('day_availability__specialist__user__full_name',)
+
+
+
+@admin.register(QnaQuestion)
+class QnaQuestionAdmin(admin.ModelAdmin):
+    list_display = ('user', 'specialist', 'message', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('user__username', 'message')
+    readonly_fields = ('created_at',)
+
+
+@admin.register(QnaAnswer) 
+class QnaAnswerAdmin(admin.ModelAdmin):
+    list_display = ('question', 'question__specialist', 'message', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('question__message', 'question__specialist')
+    readonly_fields = ('created_at',)
