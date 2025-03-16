@@ -99,9 +99,8 @@ class SpecialistAdmin(admin.ModelAdmin):
         "user",
         "average_rating",
         "reviews_count",
-        "point_to_php",
-        "created_at",
-        "updated_at",
+        "barber_shop",
+
     )
     search_fields = ("user__first_name", "user__last_name", "user__email", "bio")
     readonly_fields = ("created_at", "updated_at")

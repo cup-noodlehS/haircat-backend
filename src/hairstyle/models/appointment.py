@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 
 from account.models import Customer
 from hairstyle.models.service import Service
@@ -63,6 +64,15 @@ class Appointment(models.Model):
     
     def save(self, *args, **kwargs):
         specialist = self.service.specialist
+
+        # Fetch Appointments of that user that matches the schedule. If there is, throw an error
+        if not specialist.barber_shop:
+            if Appointment.objects.filter(service__specialist=specialist, schedule=self.schedule).exists():
+                raise ValidationError("This time slot is already booked@")
+        else:
+            if Appointment.objects.filter(service__specialist=specialist, barber=self.barber, schedule=self.schedule).exists():
+                raise ValidationError("This time slot is already booked!")
+
         if specialist.auto_accept_appointment and self.status == self.PENDING:
             self.status = self.CONFIRMED
         super().save(*args, **kwargs)
