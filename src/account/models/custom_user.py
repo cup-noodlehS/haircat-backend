@@ -20,6 +20,7 @@ class CustomUser(AbstractUser):
     - pfp: FK to File
     """
 
+    email = models.EmailField(unique=True)
     groups = models.ManyToManyField(
         "auth.Group",
         related_name="custom_user_set",
