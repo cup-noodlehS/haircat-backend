@@ -23,7 +23,9 @@ class Customer(models.Model):
 
     @property
     def has_active_appointment(self):
-        return self.Appointments.filter(schedule__gte=timezone.now()).exclude(status=3).exists()
+        # Import inside method to avoid circular import
+        from hairstyle.models.appointment import Appointment
+        return self.Appointments.filter(schedule__gte=timezone.now(), status__in=[Appointment.CONFIRMED, Appointment.PENDING]).exists()
 
     def __str__(self):
         return f"Customer - {self.user.full_name}"
