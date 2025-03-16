@@ -10,6 +10,12 @@ from account.models import Barber
 
 User = get_user_model()
 
+def get_default_unread_messages():
+    return {
+        'specialist': 0,
+        'customer': 0,
+    }
+
 
 class Appointment(models.Model):
     PENDING = 0
@@ -40,7 +46,7 @@ class Appointment(models.Model):
         on_delete=models.SET_NULL,
         related_name="Appointments",
     )
-
+    unread_messages = models.JSONField(default=get_default_unread_messages)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
