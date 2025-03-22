@@ -70,6 +70,7 @@ class UserBaseSerializer(serializers.ModelSerializer):
     is_specialist = serializers.BooleanField(read_only=True)
     is_customer = serializers.BooleanField(read_only=True)
     is_barber_shop = serializers.BooleanField(read_only=True)
+    pfp_id = serializers.IntegerField(write_only=True, required=False)
 
     def update(self, instance, validated_data):
         password = validated_data.pop("password", None)
@@ -90,6 +91,7 @@ class UserBaseSerializer(serializers.ModelSerializer):
             "phone_number",
             "full_name",
             "pfp_url",
+            "pfp_id",
             "is_specialist",
             "is_barber_shop",
             "is_customer",

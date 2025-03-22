@@ -269,7 +269,8 @@ class DayAvailability(models.Model):
                 slot = AppointmentTimeSlot(
                     day_availability=self,
                     start_time=slot_data['start_time'],
-                    end_time=slot_data['end_time']
+                    end_time=slot_data['end_time'],
+                    is_available=slot_data.get('is_available', True)
                 )
                 slot.save()
                 created_slots.append(slot)
@@ -290,6 +291,7 @@ class AppointmentTimeSlot(models.Model):
     - day_availability: FK to DayAvailability this slot belongs to
     - start_time: Time when the appointment slot starts
     - end_time: Time when the appointment slot ends
+    - is_available: Whether this time slot is available for booking
     - created_at: Timestamp when this slot was created
     """
 
@@ -305,7 +307,10 @@ class AppointmentTimeSlot(models.Model):
     end_time = models.TimeField(
         help_text="Time when the appointment slot ends"
     )
-
+    is_available = models.BooleanField(
+        default=True,
+        help_text="Whether this time slot is available for booking"
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         help_text="When this time slot was created"
