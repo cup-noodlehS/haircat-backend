@@ -42,6 +42,43 @@ class BarberShopImage(models.Model):
         ordering = ["order"]
 
 
+class SpecialistShopImage(models.Model):
+    """
+    Represents shop photos for a specialist, with a limit of 5 photos per specialist.
+    """
+    specialist = models.ForeignKey(
+        'Specialist', on_delete=models.CASCADE, related_name="shop_images"
+    )
+    image = models.ForeignKey(
+        File, on_delete=models.CASCADE, related_name="specialist_shop_images"
+    )
+    order = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.specialist.user.full_name} - Shop Image {self.order+1}"
+
+    def save(self, *args, **kwargs):
+        # Set the order based on the current count of images for this specialist
+        if not self.pk:  # Only for new images
+            self.order = self.specialist.shop_images.count()
+            
+            # Check if we've hit the limit of 5 images
+            if self.order >= 5:
+                raise ValueError("A specialist can only have up to 5 shop images.")
+        
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["order"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["specialist", "order"],
+                name="unique_specialist_shop_image_order"
+            )
+        ]
+
+
 class Barber(models.Model):
     barber_shop = models.ForeignKey(
         BarberShop, on_delete=models.CASCADE, related_name="barbers"

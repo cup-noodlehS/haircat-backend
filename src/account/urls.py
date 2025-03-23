@@ -8,6 +8,7 @@ from .views import (
     UserView,
     CustomerView,
     SpecialistView,
+    SpecialistShopImageView,
     DayAvailabilityView,
     DayOffView,
     BarberShopView,
@@ -151,5 +152,15 @@ urlpatterns = [
             {"get": "retrieve", "put": "update", "delete": "destroy"}
         ),
         name="qna-answer-detail",
+    ),
+    path(
+        "specialist-shop-images/",
+        SpecialistShopImageView.as_view({"get": "list", "post": "create"}),
+        name="specialist-shop-image-list",
+    ),
+    path(
+        "specialist-shop-images/<int:pk>/",
+        SpecialistShopImageView.as_view({"get": "retrieve", "delete": "destroy"}),
+        name="specialist-shop-image-detail",
     ),
 ]

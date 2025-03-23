@@ -7,6 +7,7 @@ from account.models import (
     DayOff,
     BarberShop,
     BarberShopImage,
+    SpecialistShopImage,
     Barber,
     AppointmentTimeSlot,
     QnaAnswer,
@@ -151,4 +152,14 @@ class QnaAnswerBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = QnaAnswer
+        fields = "__all__"
+
+
+class SpecialistShopImageBaseSerializer(serializers.ModelSerializer):
+    specialist_id = serializers.IntegerField(write_only=True)
+    image_id = serializers.IntegerField(write_only=True)
+    order = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = SpecialistShopImage
         fields = "__all__"
