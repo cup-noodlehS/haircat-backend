@@ -7,6 +7,7 @@ from account.models import (
     DayOff,
     BarberShop,
     BarberShopImage,
+    SpecialistShopImage,
     Barber,
     AppointmentTimeSlot,
     QnaAnswer,
@@ -70,6 +71,7 @@ class UserBaseSerializer(serializers.ModelSerializer):
     is_specialist = serializers.BooleanField(read_only=True)
     is_customer = serializers.BooleanField(read_only=True)
     is_barber_shop = serializers.BooleanField(read_only=True)
+    pfp_id = serializers.IntegerField(write_only=True, required=False)
 
     def update(self, instance, validated_data):
         password = validated_data.pop("password", None)
@@ -90,6 +92,7 @@ class UserBaseSerializer(serializers.ModelSerializer):
             "phone_number",
             "full_name",
             "pfp_url",
+            "pfp_id",
             "is_specialist",
             "is_barber_shop",
             "is_customer",
@@ -149,4 +152,14 @@ class QnaAnswerBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = QnaAnswer
+        fields = "__all__"
+
+
+class SpecialistShopImageBaseSerializer(serializers.ModelSerializer):
+    specialist_id = serializers.IntegerField(write_only=True)
+    image_id = serializers.IntegerField(write_only=True)
+    order = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = SpecialistShopImage
         fields = "__all__"

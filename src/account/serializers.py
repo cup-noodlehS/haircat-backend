@@ -6,6 +6,7 @@ from .base_serializers import (
     DayOffBaseSerializer,
     BarberShopBaseSerializer,
     BarberShopImageBaseSerializer,
+    SpecialistShopImageBaseSerializer,
     BarberBaseSerializer,
     AppointmentTimeSlotBaseSerializer,
     QnaAnswerBaseSerializer,
@@ -26,6 +27,15 @@ class BarberShopImageSimpleSerializer(BarberShopImageBaseSerializer):
 class BarberShopImageSerializer(BarberShopImageBaseSerializer):
     image = FileBaseSerializer(read_only=True)
     barber_shop = BarberShopBaseSerializer(read_only=True)
+
+
+class SpecialistShopImageSimpleSerializer(SpecialistShopImageBaseSerializer):
+    image = FileBaseSerializer(read_only=True)
+
+
+class SpecialistShopImageSerializer(SpecialistShopImageBaseSerializer):
+    image = FileBaseSerializer(read_only=True)
+    specialist = SpecialistBaseSerializer(read_only=True)
 
 
 class SpecialistSimpleSerializer(SpecialistBaseSerializer):
@@ -54,6 +64,7 @@ class CustomerSerializer(CustomerBaseSerializer):
 class SpecialistSerializer(SpecialistBaseSerializer):
     user = UserSerializer(read_only=True)
     barber_shop = BarberShopBaseSerializer(read_only=True)
+    shop_images = SpecialistShopImageSimpleSerializer(read_only=True, many=True)
 
 
 class DayAvailabilitySerializer(DayAvailabilityBaseSerializer):
