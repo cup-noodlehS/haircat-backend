@@ -120,6 +120,8 @@ class Specialist(models.Model):
     - user: FK to CustomUser
     - bio: text field
     - point_to_php: float field
+    - latitude: float field for shop location coordinates
+    - longitude: float field for shop location coordinates
     """
 
     user = models.OneToOneField(
@@ -137,6 +139,21 @@ class Specialist(models.Model):
         blank=True,
         null=True,
         help_text="Google Maps link for the specialist's location",
+    )
+    latitude = models.FloatField(
+        blank=True, 
+        null=True, 
+        help_text="Latitude coordinate of the specialist's shop location"
+    )
+    longitude = models.FloatField(
+        blank=True, 
+        null=True, 
+        help_text="Longitude coordinate of the specialist's shop location"
+    )
+    address = models.TextField(
+        blank=True, 
+        null=True, 
+        help_text="Full address of the specialist's shop location"
     )
     barber_shop = models.OneToOneField(
         BarberShop,
