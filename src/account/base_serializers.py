@@ -139,6 +139,7 @@ class AppointmentTimeSlotBaseSerializer(serializers.ModelSerializer):
 
 
 class QnaQuestionBaseSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(write_only=True)
     specialist_id = serializers.IntegerField(write_only=True)
     answer_message = serializers.CharField(read_only=True)
 

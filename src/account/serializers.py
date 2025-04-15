@@ -85,6 +85,7 @@ class AppointmentTimeSlotSerializer(AppointmentTimeSlotBaseSerializer):
 
 class QnaQuestionSerializer(QnaQuestionBaseSerializer):
     user = UserSerializer(read_only=True)
+    specialist = SpecialistSerializer(read_only=True)
 
 
 class QnaAnswerSerializer(QnaAnswerBaseSerializer):
