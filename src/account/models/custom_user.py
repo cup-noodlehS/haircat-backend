@@ -104,3 +104,5 @@ class CustomUser(AbstractUser):
 
     class Meta:
         app_label = 'account'
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
