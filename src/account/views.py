@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import AllowAny
+from rest_framework.decorators import action
 
 from haircat.permissions import IsAuthenticated
 from haircat.utils import GenericView
@@ -83,6 +84,40 @@ class CustomerView(GenericView):
     permission_classes = [IsAuthenticated]
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+    
+    @action(detail=False, methods=['get'])
+    def my_favorites(self, request):
+        """Get all favorite specialists of the current user"""
+        customer = request.user.customer
+        favorites = customer.favorite_specialists.all()
+        serializer = SpecialistSerializer(favorites, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['post'])
+    def add_favorite(self, request):
+        """Add a specialist to favorites"""
+        customer = request.user.customer
+        specialist_id = request.data.get('specialist_id')
+        
+        try:
+            specialist = Specialist.objects.get(id=specialist_id)
+            customer.favorite_specialists.add(specialist)
+            return Response({"detail": "Specialist added to favorites"}, status=status.HTTP_200_OK)
+        except Specialist.DoesNotExist:
+            return Response({"detail": "Specialist not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    @action(detail=False, methods=['post'])
+    def remove_favorite(self, request):
+        """Remove a specialist from favorites"""
+        customer = request.user.customer
+        specialist_id = request.data.get('specialist_id')
+        
+        try:
+            specialist = Specialist.objects.get(id=specialist_id)
+            customer.favorite_specialists.remove(specialist)
+            return Response({"detail": "Specialist removed from favorites"}, status=status.HTTP_200_OK)
+        except Specialist.DoesNotExist:
+            return Response({"detail": "Specialist not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class SpecialistView(GenericView):
