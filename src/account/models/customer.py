@@ -12,6 +12,12 @@ class Customer(models.Model):
     user = models.OneToOneField(
         CustomUser, on_delete=models.CASCADE, related_name="customer"
     )
+    favorite_specialists = models.ManyToManyField(
+        'account.Specialist', 
+        related_name='favorited_by', 
+        blank=True,
+        help_text="Specialists marked as favorite by this customer"
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
