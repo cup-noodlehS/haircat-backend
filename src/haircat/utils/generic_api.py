@@ -68,7 +68,9 @@ class GenericView(viewsets.ViewSet):
 
             cached_data = None
             if self.cache_key_prefix:
-                cache_key = self.get_list_cache_key(filters, excludes, top, bottom)
+                cache_key = self.get_list_cache_key(
+                    filters, excludes, top, bottom, order_by
+                )
                 cached_data = cache.get(cache_key)
             if cached_data:
                 return Response(cached_data, status=status.HTTP_200_OK)
@@ -125,7 +127,7 @@ class GenericView(viewsets.ViewSet):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-        serializer = self.serializer_class(instance, data=request.data)
+        serializer = self.serializer_class(instance, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             self.cache_object(serializer.data, pk)
@@ -193,10 +195,10 @@ class GenericView(viewsets.ViewSet):
     def get_object_cache_key(self, pk):
         return f"{self.cache_key_prefix}_object_{pk}"
 
-    def get_list_cache_key(self, filters, excludes, top, bottom):
+    def get_list_cache_key(self, filters, excludes, top, bottom, order_by):
         return (
             f"{self.cache_key_prefix}_list_{hash(frozenset(filters.items()))}_"
-            f"{hash(frozenset(excludes.items()))}_{top}_{bottom}"
+            f"{hash(frozenset(excludes.items()))}_{top}_{bottom}_{order_by}"
         )
 
     # Helper methods
@@ -240,8 +242,6 @@ class GenericView(viewsets.ViewSet):
         bottom = filters.pop("bottom", None)
         if bottom:
             bottom = int(bottom)
-        else:
-            bottom = top + self.size_per_request
         return top, bottom, order_by
 
     def filter_queryset(self, filters, excludes):
@@ -257,17 +257,28 @@ class GenericView(viewsets.ViewSet):
 
         paginator = Paginator(queryset, self.size_per_request)
         page_number = (top // self.size_per_request) + 1
-        page = paginator.get_page(page_number)
+        page = None
+        if bottom is None:
+            page = paginator.get_page(page_number)
+        else:
+            page = queryset[top:bottom]
 
         serializer = self.serializer_class(page, many=True)
-        data = {
-            "objects": serializer.data,
-            "total_count": paginator.count,
-            "num_pages": paginator.num_pages,
-            "current_page": page.number,
-        }
+        data = None
+        if bottom is None:
+            data = {
+                "objects": serializer.data,
+                "total_count": paginator.count,
+                "num_pages": paginator.num_pages,
+                "current_page": page.number,
+            }
+        else:
+            data = {
+                "objects": serializer.data,
+                "total_count": queryset.count(),
+            }
 
-        cache_key = self.get_list_cache_key(filters, excludes, top, bottom)
+        cache_key = self.get_list_cache_key(filters, excludes, top, bottom, order_by)
         cache.set(cache_key, data, self.cache_duration)
 
         return Response(data, status=status.HTTP_200_OK)
