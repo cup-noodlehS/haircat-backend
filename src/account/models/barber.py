@@ -184,7 +184,7 @@ class Specialist(models.Model):
         ).exists()
 
     def __str__(self):
-        return f"Specialist - {self.user.full_name}"
+        return f"{self.id} - {self.user.full_name}"
 
 
 class RewardPoints(models.Model):

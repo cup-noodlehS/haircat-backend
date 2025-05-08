@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.apps import apps
 
 from account.models import Customer
 from hairstyle.models.service import Service
@@ -111,16 +112,57 @@ class ReviewImage(models.Model):
         super().save(*args, **kwargs)
 
 
-class Message(models.Model):
-    appointment = models.ForeignKey(
-        Appointment, on_delete=models.CASCADE, related_name="Messages"
+class AppointmentMessageThread(models.Model):
+    appointment = models.OneToOneField(
+        Appointment, on_delete=models.CASCADE, related_name="MessageThread"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.appointment.customer.user.full_name} - {self.appointment.service.name}"
+    
+    @property
+    def last_message(self):
+        return self.messages.last()
+    
+    def get_formatted_last_message(self, user):
+        if self.last_message.sender == user:
+            return f"You: {self.last_message.message}"
+        else:
+            return f"{self.last_message.sender.full_name}: {self.last_message.message}"
+
+    def mark_unread_messages(self, user):
+        self.messages.filter(sender_id__ne=user.id).update(read=True)
+    
+    def send_message(self, message, sender):
+        # mark messages from other user as read then create new message
+        self.mark_unread_messages(sender)
+        return apps.get_model("hairstyle.AppointmentMessage").objects.create(appointment_message_thread=self, message=message, sender=sender)
+
+    def get_messages(self, user):
+        self.mark_unread_messages(user)
+        return self.messages.all()
+
+    def get_unread_messages_count(self, user):
+        return self.messages.filter(sender_id__ne=user.id, read=False).count()
+    
+    def get_title(self, user):
+        if user == self.appointment.customer:
+            return f"{self.appointment.service.specialist.user.full_name} - {self.appointment.service.name}"
+        else:
+            return f"{self.appointment.customer.user.full_name} - {self.appointment.service.name}"
+
+class AppointmentMessage(models.Model):
+    appointment_message_thread = models.ForeignKey(
+        AppointmentMessageThread, on_delete=models.CASCADE, related_name="Messages"
     )
     message = models.TextField(max_length=255)
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="Messages")
     schedule_change_req = models.DateTimeField(null=True, blank=True)
-
+    read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.appointment.customer.user.full_name} - {self.appointment.service.name}"
+        return f"{self.appointment_message_thread.appointment.customer.user.full_name} - {self.appointment_message_thread.appointment.service.name}"

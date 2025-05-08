@@ -2,9 +2,8 @@ from hairstyle.serializers.appointment import (
     AppointmentSerializer,
     ReviewImageSerializer,
     ReviewSerializer,
-    MessageSerializer,
 )
-from hairstyle.models.appointment import Appointment, Review, ReviewImage, Message
+from hairstyle.models.appointment import Appointment, Review, ReviewImage
 from haircat.utils import GenericView
 
 
@@ -23,8 +22,3 @@ class ReviewImageView(GenericView):
     queryset = ReviewImage.objects.all()
     allowed_methods = ["list", "create", "delete"]
 
-
-class MessageView(GenericView):
-    serializer_class = MessageSerializer
-    queryset = Message.objects.all()
-    allowed_methods = ["list", "create", "delete"]
