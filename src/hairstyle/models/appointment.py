@@ -124,7 +124,7 @@ class AppointmentMessageThread(models.Model):
     
     @property
     def last_message(self):
-        return self.messages.last()
+        return self.Messages.last()
     
     def get_formatted_last_message(self, user):
         if self.last_message.sender == user:
@@ -133,7 +133,7 @@ class AppointmentMessageThread(models.Model):
             return f"{self.last_message.sender.full_name}: {self.last_message.message}"
 
     def mark_unread_messages(self, user):
-        self.messages.filter(sender_id__ne=user.id).update(read=True)
+        self.Messages.exclude(sender=user).update(read=True)
     
     def send_message(self, message, sender):
         # mark messages from other user as read then create new message
@@ -142,13 +142,13 @@ class AppointmentMessageThread(models.Model):
 
     def get_messages(self, user):
         self.mark_unread_messages(user)
-        return self.messages.all()
+        return self.Messages.all()
 
     def get_unread_messages_count(self, user):
-        return self.messages.filter(sender_id__ne=user.id, read=False).count()
+        return self.Messages.exclude(sender=user).filter(read=False).count()
     
     def get_title(self, user):
-        if user == self.appointment.customer:
+        if user == self.appointment.customer.user:
             return f"{self.appointment.service.specialist.user.full_name} - {self.appointment.service.name}"
         else:
             return f"{self.appointment.customer.user.full_name} - {self.appointment.service.name}"

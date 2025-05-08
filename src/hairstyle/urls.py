@@ -5,7 +5,7 @@ from hairstyle.views.service import (
     ServiceImageView,
     LabelView,
 )
-from hairstyle.views import AppointmentView, ReviewView, ReviewImageView
+from hairstyle.views import AppointmentView, ReviewView, ReviewImageView, AppointmentMessageView, AppointmentMessageThreadView
 
 
 urlpatterns = [
@@ -81,4 +81,14 @@ urlpatterns = [
         ReviewImageView.as_view({"delete": "destroy"}),
         name="review-image-detail",
     ),
+    path(
+        "appointment-message-threads/",
+        AppointmentMessageThreadView.as_view({"get": "list", "post": "create"}),
+        name="appointment-message-thread-list",
+    ),
+    path(
+        "appointment-message-threads/<int:thread_id>/messages/",
+        AppointmentMessageView.as_view({"get": "list", "post": "send_message"}),
+        name="appointment-message-list",
+    )
 ]
