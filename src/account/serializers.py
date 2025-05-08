@@ -59,6 +59,7 @@ class UserSerializer(UserBaseSerializer):
 
 class CustomerSerializer(CustomerBaseSerializer):
     user = UserSerializer(read_only=True)
+    favorite_specialists = SpecialistSimpleSerializer(read_only=True, many=True)
 
 
 class SpecialistSerializer(SpecialistBaseSerializer):

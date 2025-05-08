@@ -52,6 +52,16 @@ urlpatterns = [
         name="customer-detail",
     ),
     path(
+        "customers/favorite-specialist/",
+        CustomerView.as_view({"get": "my_favorites","post": "add_favorite"}),
+        name="customer-favorite-specialist",
+    ),
+    path(
+        "customers/favorite-specialist/<int:pk>/",
+        CustomerView.as_view({"delete": "remove_favorite"}),
+        name="customer-favorite-specialist-detail",
+    ),
+    path(
         "specialists/",
         SpecialistView.as_view({"get": "list", "post": "create"}),
         name="specialist-list",
