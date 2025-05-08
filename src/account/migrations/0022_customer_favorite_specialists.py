@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('account', '0019_remove_appointmenttimeslot_is_available'),
+        ('account', '0021_specialistshopimage'),
     ]
 
     operations = [
