@@ -6,7 +6,8 @@
 
 ## Related repos
 
--   [Haircat mobile frontend repo](https://github.com/jourdancatarina3/haircat)
+-   [Haircat customer mobile repo](https://github.com/jourdancatarina3/haircat)
+-   [Haircat specialist mobile repo](https://github.com/jourdancatarina3/haircat-barber)
 
 ## Setup
 
