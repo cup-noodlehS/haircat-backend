@@ -106,7 +106,7 @@ class CustomerView(GenericView):
         except Specialist.DoesNotExist:
             return Response({"detail": "Specialist not found"}, status=status.HTTP_404_NOT_FOUND)
     
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=['delete'])
     def remove_favorite(self, request):
         """Remove a specialist from favorites"""
         customer = request.user.customer
