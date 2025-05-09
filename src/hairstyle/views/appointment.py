@@ -101,7 +101,7 @@ class AppointmentMessageThreadView(GenericView):
 
 class AppointmentMessageView(GenericView):
     serializer_class = AppointmentMessageSerializer
-    queryset = AppointmentMessage.objects.all()
+    queryset = AppointmentMessage.objects.all().order_by("-created_at")
     allowed_methods = ["list", "create"]
     permission_classes = [IsAuthenticated]
 
