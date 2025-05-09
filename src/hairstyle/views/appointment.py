@@ -147,6 +147,7 @@ class AppointmentMessageView(GenericView):
 
         thread = get_object_or_404(AppointmentMessageThread, id=thread_id)
         thread.mark_unread_messages(request.user)
+        self.queryset = self.queryset.filter(appointment_message_thread=thread)
         try:
             filters, excludes = self.parse_query_params(request)
             top, bottom, order_by = self.get_pagination_params(filters)

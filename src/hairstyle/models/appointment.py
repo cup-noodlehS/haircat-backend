@@ -140,6 +140,8 @@ class AppointmentMessageThread(models.Model):
         return self.Messages.last()
 
     def get_formatted_last_message(self, user):
+        if not self.last_message:
+            return None
         if self.last_message.sender == user:
             return f"You: {self.last_message.message}"
         else:
@@ -170,9 +172,9 @@ class AppointmentMessageThread(models.Model):
     
     def get_title_pfp_url(self, user):
         if user == self.appointment.customer.user:
-            return self.appointment.service.specialist.user.pfp.url
+            return self.appointment.service.specialist.user.pfp.url if self.appointment.service.specialist.user.pfp else None
         else:
-            return self.appointment.customer.user.pfp.url
+            return self.appointment.customer.user.pfp.url if self.appointment.customer.user.pfp else None
 
 
 class AppointmentMessage(models.Model):
