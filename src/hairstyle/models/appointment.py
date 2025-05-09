@@ -86,6 +86,10 @@ class Appointment(models.Model):
 
         if specialist.auto_accept_appointment and self.status == self.PENDING:
             self.status = self.CONFIRMED
+
+        if not AppointmentMessageThread.objects.filter(appointment=self).exists():
+            AppointmentMessageThread.objects.create(appointment=self)
+
         super().save(*args, **kwargs)
 
 

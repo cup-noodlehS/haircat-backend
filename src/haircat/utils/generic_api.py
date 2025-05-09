@@ -61,7 +61,7 @@ class GenericView(viewsets.ViewSet):
     def list(self, request):
         if "list" not in self.allowed_methods:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
+        self.initialize_queryset(request)
         try:
             filters, excludes = self.parse_query_params(request)
             top, bottom, order_by = self.get_pagination_params(filters)
@@ -83,6 +83,8 @@ class GenericView(viewsets.ViewSet):
         if "retrieve" not in self.allowed_methods:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+        self.initialize_queryset(request)
+
         cached_object = None
         if self.cache_key_prefix:
             cache_key = self.get_object_cache_key(pk)
@@ -98,6 +100,8 @@ class GenericView(viewsets.ViewSet):
     def create(self, request):
         if "create" not in self.allowed_methods:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+        self.initialize_queryset(request)
 
         self.pre_create(request)
 
@@ -115,6 +119,8 @@ class GenericView(viewsets.ViewSet):
     def update(self, request, pk=None):
         if "update" not in self.allowed_methods:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        
+        self.initialize_queryset(request)
 
         instance = get_object_or_404(self.queryset, pk=pk)
         self.pre_update(request, instance)
@@ -141,6 +147,8 @@ class GenericView(viewsets.ViewSet):
     def destroy(self, request, pk=None):
         if "delete" not in self.allowed_methods:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+        self.initialize_queryset(request)
 
         instance = get_object_or_404(self.queryset, pk=pk)
         self.delete_cache(pk)
@@ -242,6 +250,8 @@ class GenericView(viewsets.ViewSet):
         bottom = filters.pop("bottom", None)
         if bottom:
             bottom = int(bottom)
+        else:
+            bottom = top + self.size_per_request
         return top, bottom, order_by
 
     def filter_queryset(self, filters, excludes):
@@ -257,26 +267,15 @@ class GenericView(viewsets.ViewSet):
 
         paginator = Paginator(queryset, self.size_per_request)
         page_number = (top // self.size_per_request) + 1
-        page = None
-        if bottom is None:
-            page = paginator.get_page(page_number)
-        else:
-            page = queryset[top:bottom]
+        page = paginator.get_page(page_number)
 
         serializer = self.serializer_class(page, many=True)
-        data = None
-        if bottom is None:
-            data = {
-                "objects": serializer.data,
-                "total_count": paginator.count,
-                "num_pages": paginator.num_pages,
-                "current_page": page.number,
-            }
-        else:
-            data = {
-                "objects": serializer.data,
-                "total_count": queryset.count(),
-            }
+        data = {
+            "objects": serializer.data,
+            "total_count": paginator.count,
+            "num_pages": paginator.num_pages,
+            "current_page": page.number,
+        }
 
         cache_key = self.get_list_cache_key(filters, excludes, top, bottom, order_by)
         cache.set(cache_key, data, self.cache_duration)

@@ -24,6 +24,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
 from django.core.cache import cache
 from django.core.paginator import Paginator
+from django.db.models import Q
+
 
 
 class AppointmentView(GenericView):
@@ -47,6 +49,9 @@ class AppointmentMessageThreadView(GenericView):
     queryset = AppointmentMessageThread.objects.all()
     allowed_methods = ["list", "create", "retrieve"]
     permission_classes = [IsAuthenticated]
+
+    def initialize_queryset(self, request):
+        self.queryset = self.queryset.filter(Q(appointment__customer__user=request.user) | Q(appointment__service__specialist__user=request.user))
 
     def filter(self, request, filters, excludes, top, bottom, order_by=None):
         self.queryset = (
