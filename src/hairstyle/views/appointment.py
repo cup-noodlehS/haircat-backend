@@ -51,7 +51,12 @@ class AppointmentMessageThreadView(GenericView):
     permission_classes = [IsAuthenticated]
 
     def initialize_queryset(self, request):
+        self.request = request
         self.queryset = self.queryset.filter(Q(appointment__customer__user=request.user) | Q(appointment__service__specialist__user=request.user))
+    
+    def get_serialized_object(self, pk):
+        instance = get_object_or_404(self.queryset, pk=pk)
+        return self.serializer_class(instance, context={"request": self.request}).data
 
     def filter(self, request, filters, excludes, top, bottom, order_by=None):
         self.queryset = (
