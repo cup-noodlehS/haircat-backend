@@ -3,6 +3,7 @@ from hairstyle.base_serializers import (
     ServiceBaseSerializer,
     ReviewBaseSerializer,
     ReviewImageBaseSerializer,
+    AppointmentMessageThreadBaseSerializer,
 )
 from account.base_serializers import (
     SpecialistBaseSerializer,
@@ -35,6 +36,7 @@ class AppointmentSerializer(AppointmentBaseSerializer):
     customer = CustomerSerializer(read_only=True)
     specialist = SpecialistSerializer(read_only=True)
     service = ServiceBaseSerializer(read_only=True)
+    message_thread = AppointmentMessageThreadBaseSerializer(read_only=True)
 
 
 class ReviewImageSerializer(ReviewImageBaseSerializer):

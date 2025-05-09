@@ -128,7 +128,7 @@ class ReviewImage(models.Model):
 
 class AppointmentMessageThread(models.Model):
     appointment = models.OneToOneField(
-        Appointment, on_delete=models.CASCADE, related_name="MessageThread"
+        Appointment, on_delete=models.CASCADE, related_name="message_thread"
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -285,3 +285,6 @@ class GenericView(viewsets.ViewSet):
     def get_serialized_object(self, pk):
         instance = get_object_or_404(self.queryset, pk=pk)
         return self.serializer_class(instance).data
+    
+    def initialize_queryset(self, request):
+        pass
