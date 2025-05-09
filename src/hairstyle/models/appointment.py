@@ -167,6 +167,12 @@ class AppointmentMessageThread(models.Model):
             return f"{self.appointment.service.specialist.user.full_name} - {self.appointment.service.name}"
         else:
             return f"{self.appointment.customer.user.full_name} - {self.appointment.service.name}"
+    
+    def get_title_pfp_url(self, user):
+        if user == self.appointment.customer.user:
+            return self.appointment.service.specialist.user.pfp.url
+        else:
+            return self.appointment.customer.user.pfp.url
 
 
 class AppointmentMessage(models.Model):

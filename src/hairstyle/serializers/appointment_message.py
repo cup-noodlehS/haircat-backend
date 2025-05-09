@@ -30,6 +30,7 @@ class AppointmentMessageThreadSerializer(AppointmentMessageThreadBaseSerializer)
     title = serializers.SerializerMethodField(read_only=True)
     unread_count = serializers.SerializerMethodField(read_only=True)
     formatted_last_message = serializers.SerializerMethodField(read_only=True)
+    title_pfp_url = serializers.SerializerMethodField(read_only=True)
 
     def get_last_message(self, obj):
         if not obj.last_message:
@@ -53,3 +54,9 @@ class AppointmentMessageThreadSerializer(AppointmentMessageThreadBaseSerializer)
         if not request:
             return None
         return obj.get_formatted_last_message(request.user)
+
+    def get_title_pfp_url(self, obj):
+        request = self.context.get("request")
+        if not request:
+            return None
+        return obj.get_title_pfp_url(request.user)
