@@ -100,7 +100,6 @@ class SpecialistAdmin(admin.ModelAdmin):
         "average_rating",
         "reviews_count",
         "barber_shop",
-
     )
     search_fields = ("user__first_name", "user__last_name", "user__email", "bio")
     readonly_fields = ("created_at", "updated_at")
@@ -110,6 +109,7 @@ class SpecialistAdmin(admin.ModelAdmin):
 class AppointmentTimeSlotInline(admin.TabularInline):
     model = AppointmentTimeSlot
     extra = 1
+
 
 @admin.register(DayAvailability)
 class DayAvailabilityAdmin(admin.ModelAdmin):
@@ -121,10 +121,9 @@ class DayAvailabilityAdmin(admin.ModelAdmin):
 
 @admin.register(AppointmentTimeSlot)
 class AppointmentTimeSlotAdmin(admin.ModelAdmin):
-    list_display = ('day_availability', 'start_time', 'end_time')
-    list_filter = ('day_availability__day_of_week',)
-    search_fields = ('day_availability__specialist__user__full_name',)
-
+    list_display = ("day_availability", "start_time", "end_time")
+    list_filter = ("day_availability__day_of_week",)
+    search_fields = ("day_availability__specialist__user__full_name",)
 
 
 @admin.register(RewardPoints)
@@ -187,18 +186,17 @@ class BarberAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "updated_at")
 
 
-
 @admin.register(QnaQuestion)
 class QnaQuestionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'specialist', 'message', 'created_at')
-    list_filter = ('created_at',)
-    search_fields = ('user__username', 'message')
-    readonly_fields = ('created_at',)
+    list_display = ("user", "specialist", "message", "created_at")
+    list_filter = ("created_at",)
+    search_fields = ("user__username", "message")
+    readonly_fields = ("created_at",)
 
 
-@admin.register(QnaAnswer) 
+@admin.register(QnaAnswer)
 class QnaAnswerAdmin(admin.ModelAdmin):
-    list_display = ('question', 'question__specialist', 'message', 'created_at')
-    list_filter = ('created_at',)
-    search_fields = ('question__message', 'question__specialist')
-    readonly_fields = ('created_at',)
+    list_display = ("question", "question__specialist", "message", "created_at")
+    list_filter = ("created_at",)
+    search_fields = ("question__message", "question__specialist")
+    readonly_fields = ("created_at",)

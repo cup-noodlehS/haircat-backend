@@ -1,6 +1,12 @@
 from django.contrib import admin
 from .models.service import Service, ServiceImage, ServiceLabel, Label
-from .models.appointment import Appointment, Review, ReviewImage, AppointmentMessageThread, AppointmentMessage
+from .models.appointment import (
+    Appointment,
+    Review,
+    ReviewImage,
+    AppointmentMessageThread,
+    AppointmentMessage,
+)
 
 
 @admin.register(Label)
@@ -95,41 +101,44 @@ class AppointmentMessageThreadAdmin(admin.ModelAdmin):
     list_display = ("id", "appointment_info", "created_at", "updated_at")
     list_filter = ("created_at", "updated_at")
     search_fields = (
-        "appointment__customer__user__full_name", 
+        "appointment__customer__user__full_name",
         "appointment__service__name",
-        "appointment__service__specialist__user__full_name"
+        "appointment__service__specialist__user__full_name",
     )
     readonly_fields = ("created_at", "updated_at")
     inlines = [AppointmentMessageInline]
-    
+
     def appointment_info(self, obj):
         return f"{obj.appointment.customer.user.full_name} - {obj.appointment.service.name}"
+
     appointment_info.short_description = "Appointment"
 
 
 @admin.register(AppointmentMessage)
 class AppointmentMessageAdmin(admin.ModelAdmin):
     list_display = (
-        "id", 
-        "thread_info", 
-        "short_message", 
-        "sender", 
-        "read", 
-        "created_at"
+        "id",
+        "thread_info",
+        "short_message",
+        "sender",
+        "read",
+        "created_at",
     )
     list_filter = ("read", "created_at", "updated_at")
     search_fields = (
-        "message", 
-        "sender__full_name", 
+        "message",
+        "sender__full_name",
         "appointment_message_thread__appointment__customer__user__full_name",
-        "appointment_message_thread__appointment__service__name"
+        "appointment_message_thread__appointment__service__name",
     )
     readonly_fields = ("created_at", "updated_at")
-    
+
     def thread_info(self, obj):
         return f"{obj.appointment_message_thread.appointment.customer.user.full_name} - {obj.appointment_message_thread.appointment.service.name}"
+
     thread_info.short_description = "Thread"
-    
+
     def short_message(self, obj):
         return obj.message[:50] + "..." if len(obj.message) > 50 else obj.message
+
     short_message.short_description = "Message"

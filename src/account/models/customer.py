@@ -3,6 +3,7 @@ from django.utils import timezone
 
 from .custom_user import CustomUser
 
+
 class Customer(models.Model):
     """
     **Fields**
@@ -13,10 +14,10 @@ class Customer(models.Model):
         CustomUser, on_delete=models.CASCADE, related_name="customer"
     )
     favorite_specialists = models.ManyToManyField(
-        'account.Specialist', 
-        related_name='favorited_by', 
+        "account.Specialist",
+        related_name="favorited_by",
         blank=True,
-        help_text="Specialists marked as favorite by this customer"
+        help_text="Specialists marked as favorite by this customer",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -31,7 +32,11 @@ class Customer(models.Model):
     def has_active_appointment(self):
         # Import inside method to avoid circular import
         from hairstyle.models.appointment import Appointment
-        return self.Appointments.filter(schedule__gte=timezone.now(), status__in=[Appointment.CONFIRMED, Appointment.PENDING]).exists()
+
+        return self.Appointments.filter(
+            schedule__gte=timezone.now(),
+            status__in=[Appointment.CONFIRMED, Appointment.PENDING],
+        ).exists()
 
     def __str__(self):
         return f"Customer - {self.user.full_name}"

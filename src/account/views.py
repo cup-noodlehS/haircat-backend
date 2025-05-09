@@ -87,51 +87,60 @@ class CustomerView(GenericView):
     permission_classes = [DRFIsAuthenticated]
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    
-    @action(detail=False, methods=['get'])
+
+    @action(detail=False, methods=["get"])
     def my_favorites(self, request):
         """Get all favorite specialists of the current user"""
         customer = request.user.customer
         favorites = customer.favorite_specialists.all()
         serializer = SpecialistSerializer(favorites, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    @action(detail=False, methods=['post'])
+
+    @action(detail=False, methods=["post"])
     def add_favorite(self, request):
         """Add a specialist to favorites"""
         customer = request.user.customer
-        specialist_id = request.data.get('specialist_id')
-        
+        specialist_id = request.data.get("specialist_id")
+
         try:
             specialist = Specialist.objects.get(id=specialist_id)
             customer.favorite_specialists.add(specialist)
-            return Response({"detail": "Specialist added to favorites"}, status=status.HTTP_200_OK)
+            return Response(
+                {"detail": "Specialist added to favorites"}, status=status.HTTP_200_OK
+            )
         except Specialist.DoesNotExist:
-            return Response({"detail": "Specialist not found"}, status=status.HTTP_404_NOT_FOUND)
-    
-    @action(detail=False, methods=['delete'])
+            return Response(
+                {"detail": "Specialist not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+    @action(detail=False, methods=["delete"])
     def remove_favorite(self, request, pk):
         """Remove a specialist from favorites"""
         customer = request.user.customer
         specialist_id = pk
-        
+
         try:
             specialist = Specialist.objects.get(id=specialist_id)
             customer.favorite_specialists.remove(specialist)
-            return Response({"detail": "Specialist removed from favorites"}, status=status.HTTP_200_OK)
+            return Response(
+                {"detail": "Specialist removed from favorites"},
+                status=status.HTTP_200_OK,
+            )
         except Specialist.DoesNotExist:
-            return Response({"detail": "Specialist not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "Specialist not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
 
 class SpecialistView(GenericView):
     permission_classes = [AllowAny]  # Allow registration without authentication
     queryset = Specialist.objects.all()
     serializer_class = SpecialistSerializer
-    
+
     # Override specific methods to control permissions
     def get_permissions(self):
         # Only allow AllowAny for create method, require authentication for others
-        if self.request.method == 'POST':
+        if self.request.method == "POST":
             return [AllowAny()]
         return [DRFIsAuthenticated()]
 
@@ -190,9 +199,10 @@ class SpecialistShopImageView(viewsets.ModelViewSet):
     """
     CRUD operations for specialist shop images.
     """
+
     queryset = SpecialistShopImage.objects.all()
     serializer_class = SpecialistShopImageSerializer
-    permission_classes = [AllowAny]  # Allow anyone to create shop images 
+    permission_classes = [AllowAny]  # Allow anyone to create shop images
 
     def get_queryset(self):
         """Filter images by specialist_id query parameter if provided"""
@@ -205,16 +215,18 @@ class SpecialistShopImageView(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         """Create a new specialist shop image, enforcing the 5-image limit per specialist"""
         specialist_id = request.data.get("specialist_id")
-        
+
         # Check if the specialist exists
         specialist = get_object_or_404(Specialist, id=specialist_id)
-        
+
         # Check if the specialist already has 5 images
-        existing_count = SpecialistShopImage.objects.filter(specialist=specialist).count()
+        existing_count = SpecialistShopImage.objects.filter(
+            specialist=specialist
+        ).count()
         if existing_count >= 5:
             return Response(
                 {"detail": "A specialist can only have up to 5 shop images."},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         return super().create(request, *args, **kwargs)

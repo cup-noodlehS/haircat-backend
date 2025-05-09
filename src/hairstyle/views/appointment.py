@@ -5,9 +5,15 @@ from hairstyle.serializers.appointment import (
 )
 from hairstyle.serializers.appointment_message import (
     AppointmentMessageThreadSerializer,
-    AppointmentMessageSerializer
+    AppointmentMessageSerializer,
 )
-from hairstyle.models.appointment import Appointment, Review, ReviewImage, AppointmentMessageThread, AppointmentMessage
+from hairstyle.models.appointment import (
+    Appointment,
+    Review,
+    ReviewImage,
+    AppointmentMessageThread,
+    AppointmentMessage,
+)
 from haircat.utils import GenericView
 from rest_framework.permissions import IsAuthenticated
 from django.db import models
@@ -18,6 +24,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
 from django.core.cache import cache
 from django.core.paginator import Paginator
+
+
 class AppointmentView(GenericView):
     serializer_class = AppointmentSerializer
     queryset = Appointment.objects.all()
@@ -36,13 +44,20 @@ class ReviewImageView(GenericView):
 
 class AppointmentMessageThreadView(GenericView):
     serializer_class = AppointmentMessageThreadSerializer
-    queryset = AppointmentMessageThread.objects.annotate(
-        latest_message_created_at=models.Max('Messages__created_at')
-    ).order_by('-latest_message_created_at')
-    allowed_methods = ["list", "create"]
+    queryset = AppointmentMessageThread.objects.all()
+    allowed_methods = ["list", "create", "retrieve"]
     permission_classes = [IsAuthenticated]
 
     def filter(self, request, filters, excludes, top, bottom, order_by=None):
+        self.queryset = (
+            self.queryset.annotate(
+                latest_message_created_at=models.Max("Messages__created_at")
+            )
+            .filter(Messages__isnull=False)
+            .distinct()
+            .order_by("-latest_message_created_at")
+        )
+
         queryset = self.filter_queryset(filters, excludes)
 
         if order_by:
@@ -56,7 +71,9 @@ class AppointmentMessageThreadView(GenericView):
         else:
             page = queryset[top:bottom]
 
-        serializer = self.serializer_class(page, many=True, context={'request': request})
+        serializer = self.serializer_class(
+            page, many=True, context={"request": request}
+        )
         data = None
         if bottom is None:
             data = {
@@ -77,52 +94,47 @@ class AppointmentMessageThreadView(GenericView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-
 class AppointmentMessageView(GenericView):
     serializer_class = AppointmentMessageSerializer
     queryset = AppointmentMessage.objects.all()
     allowed_methods = ["list", "create"]
     permission_classes = [IsAuthenticated]
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=["post"])
     def send_message(self, request, thread_id=None):
         if not thread_id:
             return Response(
-                {"error": "thread_id is required"}, 
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "thread_id is required"}, status=status.HTTP_400_BAD_REQUEST
             )
-        
+
         try:
             thread = AppointmentMessageThread.objects.get(id=thread_id)
             thread.mark_unread_messages(request.user)
         except AppointmentMessageThread.DoesNotExist:
             return Response(
-                {"error": "Thread not found"}, 
-                status=status.HTTP_404_NOT_FOUND
+                {"error": "Thread not found"}, status=status.HTTP_404_NOT_FOUND
             )
-        
+
         # Create a mutable copy of the request data
         mutable_data = request.data.copy()
-        mutable_data['sender_id'] = request.user.id
-        mutable_data['appointment_message_thread_id'] = thread_id
-        
+        mutable_data["sender_id"] = request.user.id
+        mutable_data["appointment_message_thread_id"] = thread_id
+
         # Update the request object with the modified data
         request._full_data = mutable_data
-            
+
         return self.create(request)
 
-    @action(detail=False, methods=['get'])
-
+    @action(detail=False, methods=["get"])
     def list(self, request, thread_id=None):
         if "list" not in self.allowed_methods:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        
+
         if not thread_id:
             return Response(
-                {"error": "thread_id is required"}, 
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "thread_id is required"}, status=status.HTTP_400_BAD_REQUEST
             )
-        
+
         thread = get_object_or_404(AppointmentMessageThread, id=thread_id)
         thread.mark_unread_messages(request.user)
         try:
@@ -140,4 +152,4 @@ class AppointmentMessageView(GenericView):
 
             return self.filter(request, filters, excludes, top, bottom, order_by)
         except ValidationError as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST) 
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

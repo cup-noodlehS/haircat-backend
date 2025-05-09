@@ -48,9 +48,7 @@ class CustomerBaseSerializer(serializers.ModelSerializer):
     has_active_appointment = serializers.BooleanField(read_only=True)
     user_id = serializers.IntegerField(write_only=True)
     favorite_specialists_ids = serializers.ListField(
-        write_only=True, 
-        required=False,
-        child=serializers.IntegerField()
+        write_only=True, required=False, child=serializers.IntegerField()
     )
 
     class Meta:

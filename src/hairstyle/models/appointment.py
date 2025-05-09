@@ -12,10 +12,11 @@ from account.models import Barber
 
 User = get_user_model()
 
+
 def get_default_unread_messages():
     return {
-        'specialist': 0,
-        'customer': 0,
+        "specialist": 0,
+        "customer": 0,
     }
 
 
@@ -62,16 +63,25 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"{self.customer.user.full_name} - {self.service.name}"
-    
+
     def save(self, *args, **kwargs):
         specialist = self.service.specialist
 
         # Fetch Appointments of that user that matches the schedule. If there is, throw an error
         if not specialist.barber_shop:
-            if Appointment.objects.filter(service__specialist=specialist, schedule=self.schedule, status=self.CONFIRMED).exists():
+            if Appointment.objects.filter(
+                service__specialist=specialist,
+                schedule=self.schedule,
+                status=self.CONFIRMED,
+            ).exists():
                 raise ValidationError("This time slot is already booked")
         else:
-            if Appointment.objects.filter(service__specialist=specialist, barber=self.barber, schedule=self.schedule, status=self.CONFIRMED).exists():
+            if Appointment.objects.filter(
+                service__specialist=specialist,
+                barber=self.barber,
+                schedule=self.schedule,
+                status=self.CONFIRMED,
+            ).exists():
                 raise ValidationError("This time slot is already booked")
 
         if specialist.auto_accept_appointment and self.status == self.PENDING:
@@ -118,14 +128,14 @@ class AppointmentMessageThread(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return f"{self.appointment.customer.user.full_name} - {self.appointment.service.name}"
-    
+
     @property
     def last_message(self):
         return self.Messages.last()
-    
+
     def get_formatted_last_message(self, user):
         if self.last_message.sender == user:
             return f"You: {self.last_message.message}"
@@ -134,11 +144,13 @@ class AppointmentMessageThread(models.Model):
 
     def mark_unread_messages(self, user):
         self.Messages.exclude(sender=user).update(read=True)
-    
+
     def send_message(self, message, sender):
         # mark messages from other user as read then create new message
         self.mark_unread_messages(sender)
-        return apps.get_model("hairstyle.AppointmentMessage").objects.create(appointment_message_thread=self, message=message, sender=sender)
+        return apps.get_model("hairstyle.AppointmentMessage").objects.create(
+            appointment_message_thread=self, message=message, sender=sender
+        )
 
     def get_messages(self, user):
         self.mark_unread_messages(user)
@@ -146,12 +158,13 @@ class AppointmentMessageThread(models.Model):
 
     def get_unread_messages_count(self, user):
         return self.Messages.exclude(sender=user).filter(read=False).count()
-    
+
     def get_title(self, user):
         if user == self.appointment.customer.user:
             return f"{self.appointment.service.specialist.user.full_name} - {self.appointment.service.name}"
         else:
             return f"{self.appointment.customer.user.full_name} - {self.appointment.service.name}"
+
 
 class AppointmentMessage(models.Model):
     appointment_message_thread = models.ForeignKey(

@@ -29,4 +29,3 @@ class ReviewImageBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReviewImage
         fields = "__all__"
-

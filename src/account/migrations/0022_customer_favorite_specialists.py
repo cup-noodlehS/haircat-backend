@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('account', '0021_specialistshopimage'),
+        ("account", "0021_specialistshopimage"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customer',
-            name='favorite_specialists',
-            field=models.ManyToManyField(blank=True, help_text='Specialists marked as favorite by this customer', related_name='favorited_by', to='account.specialist'),
+            model_name="customer",
+            name="favorite_specialists",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Specialists marked as favorite by this customer",
+                related_name="favorited_by",
+                to="account.specialist",
+            ),
         ),
     ]

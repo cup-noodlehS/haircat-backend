@@ -103,6 +103,6 @@ class CustomUser(AbstractUser):
         return f"{self.id} - {self.full_name}"
 
     class Meta:
-        app_label = 'account'
-        verbose_name = 'User'
-        verbose_name_plural = 'Users'
+        app_label = "account"
+        verbose_name = "User"
+        verbose_name_plural = "Users"
