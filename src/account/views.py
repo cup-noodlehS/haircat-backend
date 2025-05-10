@@ -23,7 +23,7 @@ from .serializers import (
     QnaAnswerSerializer,
     QnaQuestionSerializer,
     ChangePasswordSerializer,
-
+    SpecialistShopImageSerializer
 )
 from .models import (
     CustomUser,
