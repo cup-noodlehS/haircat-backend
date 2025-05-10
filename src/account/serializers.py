@@ -10,7 +10,7 @@ from .base_serializers import (
     BarberBaseSerializer,
     AppointmentTimeSlotBaseSerializer,
     QnaAnswerBaseSerializer,
-    QnaQuestionBaseSerializer
+    QnaQuestionBaseSerializer,
 )
 from general.base_serializers import FileBaseSerializer, LocationBaseSerializer
 

@@ -53,7 +53,7 @@ urlpatterns = [
     ),
     path(
         "customers/favorite-specialist/",
-        CustomerView.as_view({"get": "my_favorites","post": "add_favorite"}),
+        CustomerView.as_view({"get": "my_favorites", "post": "add_favorite"}),
         name="customer-favorite-specialist",
     ),
     path(
@@ -146,9 +146,7 @@ urlpatterns = [
     ),
     path(
         "qna-questions/<int:pk>/",
-        QnaQuestionView.as_view(
-            {"get": "retrieve", "delete": "destroy"}
-        ),
+        QnaQuestionView.as_view({"get": "retrieve", "delete": "destroy"}),
         name="qna-question-detail",
     ),
     path(

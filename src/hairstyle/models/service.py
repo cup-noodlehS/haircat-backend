@@ -32,11 +32,18 @@ class Service(models.Model):
     @property
     def average_rating(self):
         from hairstyle.models.appointment import Review
-        return Review.objects.filter(appointment__service=self).aggregate(Avg("rating"))["rating__avg"] or 0
+
+        return (
+            Review.objects.filter(appointment__service=self).aggregate(Avg("rating"))[
+                "rating__avg"
+            ]
+            or 0
+        )
 
     @property
     def total_reviews(self):
         from hairstyle.models.appointment import Review
+
         return Review.objects.filter(appointment__service=self).count()
 
     @property
