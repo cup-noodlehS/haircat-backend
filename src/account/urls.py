@@ -8,6 +8,7 @@ from .views import (
     UserView,
     CustomerView,
     SpecialistView,
+    SpecialistShopImageView,
     DayAvailabilityView,
     DayOffView,
     BarberShopView,
@@ -53,19 +54,14 @@ urlpatterns = [
         name="customer-detail",
     ),
     path(
-        "customers/my-favorites/",
-        CustomerView.as_view({"get": "my_favorites"}),
-        name="customer-my-favorites",
+        "customers/favorite-specialist/",
+        CustomerView.as_view({"get": "my_favorites", "post": "add_favorite"}),
+        name="customer-favorite-specialist",
     ),
     path(
-        "customers/add-favorite/",
-        CustomerView.as_view({"post": "add_favorite"}),
-        name="customer-add-favorite",
-    ),
-    path(
-        "customers/remove-favorite/",
-        CustomerView.as_view({"post": "remove_favorite"}),
-        name="customer-remove-favorite",
+        "customers/favorite-specialist/<int:pk>/",
+        CustomerView.as_view({"delete": "remove_favorite"}),
+        name="customer-favorite-specialist-detail",
     ),
     path(
         "specialists/",
@@ -152,9 +148,7 @@ urlpatterns = [
     ),
     path(
         "qna-questions/<int:pk>/",
-        QnaQuestionView.as_view(
-            {"get": "retrieve", "delete": "destroy"}
-        ),
+        QnaQuestionView.as_view({"get": "retrieve", "delete": "destroy"}),
         name="qna-question-detail",
     ),
     path(
@@ -168,5 +162,15 @@ urlpatterns = [
             {"get": "retrieve", "put": "update", "delete": "destroy"}
         ),
         name="qna-answer-detail",
+    ),
+    path(
+        "specialist-shop-images/",
+        SpecialistShopImageView.as_view({"get": "list", "post": "create"}),
+        name="specialist-shop-image-list",
+    ),
+    path(
+        "specialist-shop-images/<int:pk>/",
+        SpecialistShopImageView.as_view({"get": "retrieve", "delete": "destroy"}),
+        name="specialist-shop-image-detail",
     ),
 ]

@@ -100,7 +100,9 @@ class CustomUser(AbstractUser):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.full_name
+        return f"{self.id} - {self.full_name}"
 
     class Meta:
-        app_label = 'account'
+        app_label = "account"
+        verbose_name = "User"
+        verbose_name_plural = "Users"

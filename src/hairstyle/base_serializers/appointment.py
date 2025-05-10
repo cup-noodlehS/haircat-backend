@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from hairstyle.models.appointment import Appointment, Review, Message, ReviewImage
+from hairstyle.models.appointment import Appointment, Review, ReviewImage
 
 
 class AppointmentBaseSerializer(serializers.ModelSerializer):
@@ -28,13 +28,4 @@ class ReviewImageBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReviewImage
-        fields = "__all__"
-
-
-class MessageBaseSerializer(serializers.ModelSerializer):
-    appointment_id = serializers.IntegerField(write_only=True)
-    sender_id = serializers.IntegerField(write_only=True)
-
-    class Meta:
-        model = Message
         fields = "__all__"

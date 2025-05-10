@@ -42,6 +42,44 @@ class BarberShopImage(models.Model):
         ordering = ["order"]
 
 
+class SpecialistShopImage(models.Model):
+    """
+    Represents shop photos for a specialist, with a limit of 5 photos per specialist.
+    """
+
+    specialist = models.ForeignKey(
+        "Specialist", on_delete=models.CASCADE, related_name="shop_images"
+    )
+    image = models.ForeignKey(
+        File, on_delete=models.CASCADE, related_name="specialist_shop_images"
+    )
+    order = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.specialist.user.full_name} - Shop Image {self.order+1}"
+
+    def save(self, *args, **kwargs):
+        # Set the order based on the current count of images for this specialist
+        if not self.pk:  # Only for new images
+            self.order = self.specialist.shop_images.count()
+
+            # Check if we've hit the limit of 5 images
+            if self.order >= 5:
+                raise ValueError("A specialist can only have up to 5 shop images.")
+
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["order"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["specialist", "order"],
+                name="unique_specialist_shop_image_order",
+            )
+        ]
+
+
 class Barber(models.Model):
     barber_shop = models.ForeignKey(
         BarberShop, on_delete=models.CASCADE, related_name="barbers"
@@ -147,7 +185,7 @@ class Specialist(models.Model):
         ).exists()
 
     def __str__(self):
-        return f"Specialist - {self.user.full_name}"
+        return f"{self.id} - {self.user.full_name}"
 
 
 class RewardPoints(models.Model):
@@ -257,19 +295,20 @@ class DayAvailability(models.Model):
     def create_time_slots(self, slots_data):
         """
         Create multiple time slots for this day availability.
-        
+
         Args:
             slots_data: List of dicts with start_time and end_time
         """
         from django.core.exceptions import ValidationError
-        
+
         created_slots = []
         for slot_data in slots_data:
             try:
                 slot = AppointmentTimeSlot(
                     day_availability=self,
-                    start_time=slot_data['start_time'],
-                    end_time=slot_data['end_time']
+                    start_time=slot_data["start_time"],
+                    end_time=slot_data["end_time"],
+                    is_available=slot_data.get("is_available", True),
                 )
                 slot.save()
                 created_slots.append(slot)
@@ -278,7 +317,7 @@ class DayAvailability(models.Model):
                 for created_slot in created_slots:
                     created_slot.delete()
                 raise ValidationError(f"Invalid time slot: {e}")
-        
+
         return created_slots
 
 
@@ -290,6 +329,7 @@ class AppointmentTimeSlot(models.Model):
     - day_availability: FK to DayAvailability this slot belongs to
     - start_time: Time when the appointment slot starts
     - end_time: Time when the appointment slot ends
+    - is_available: Whether this time slot is available for booking
     - created_at: Timestamp when this slot was created
     """
 
@@ -299,16 +339,13 @@ class AppointmentTimeSlot(models.Model):
         related_name="time_slots",
         help_text="The day availability this time slot belongs to",
     )
-    start_time = models.TimeField(
-        help_text="Time when the appointment slot starts"
+    start_time = models.TimeField(help_text="Time when the appointment slot starts")
+    end_time = models.TimeField(help_text="Time when the appointment slot ends")
+    is_available = models.BooleanField(
+        default=True, help_text="Whether this time slot is available for booking"
     )
-    end_time = models.TimeField(
-        help_text="Time when the appointment slot ends"
-    )
-
     created_at = models.DateTimeField(
-        auto_now_add=True,
-        help_text="When this time slot was created"
+        auto_now_add=True, help_text="When this time slot was created"
     )
 
     class Meta:
@@ -322,9 +359,9 @@ class AppointmentTimeSlot(models.Model):
             ),
             # Prevent overlapping time slots for the same day availability
             models.UniqueConstraint(
-                fields=['day_availability', 'start_time', 'end_time'],
-                name='unique_time_slot'
-            )
+                fields=["day_availability", "start_time", "end_time"],
+                name="unique_time_slot",
+            ),
         ]
 
     def __str__(self):
@@ -332,26 +369,27 @@ class AppointmentTimeSlot(models.Model):
 
     def clean(self):
         from django.core.exceptions import ValidationError
+
         # Check if the time slot is within the day availability's time range
-        if (self.start_time < self.day_availability.start_time or 
-            self.end_time > self.day_availability.end_time):
+        if (
+            self.start_time < self.day_availability.start_time
+            or self.end_time > self.day_availability.end_time
+        ):
             raise ValidationError(
                 "Time slot must be within the day availability's time range"
             )
-        
+
         # Check for overlapping slots
         overlapping = AppointmentTimeSlot.objects.filter(
             day_availability=self.day_availability,
             start_time__lt=self.end_time,
-            end_time__gt=self.start_time
+            end_time__gt=self.start_time,
         )
         if self.pk:  # If updating existing slot
             overlapping = overlapping.exclude(pk=self.pk)
-        
+
         if overlapping.exists():
-            raise ValidationError(
-                "This time slot overlaps with an existing slot"
-            )
+            raise ValidationError("This time slot overlaps with an existing slot")
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -425,7 +463,7 @@ class QnaQuestion(models.Model):
 
     @property
     def answer_message(self):
-        return self.answer.message if hasattr(self, "answer") else ''
+        return self.answer.message if hasattr(self, "answer") else ""
 
     def __str__(self):
         return f"{self.user} asked {self.specialist}: {self.message}"

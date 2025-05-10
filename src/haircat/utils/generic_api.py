@@ -61,14 +61,16 @@ class GenericView(viewsets.ViewSet):
     def list(self, request):
         if "list" not in self.allowed_methods:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
+        self.initialize_queryset(request)
         try:
             filters, excludes = self.parse_query_params(request)
             top, bottom, order_by = self.get_pagination_params(filters)
 
             cached_data = None
             if self.cache_key_prefix:
-                cache_key = self.get_list_cache_key(filters, excludes, top, bottom)
+                cache_key = self.get_list_cache_key(
+                    filters, excludes, top, bottom, order_by
+                )
                 cached_data = cache.get(cache_key)
             if cached_data:
                 return Response(cached_data, status=status.HTTP_200_OK)
@@ -80,6 +82,8 @@ class GenericView(viewsets.ViewSet):
     def retrieve(self, request, pk=None):
         if "retrieve" not in self.allowed_methods:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+        self.initialize_queryset(request)
 
         cached_object = None
         if self.cache_key_prefix:
@@ -97,6 +101,8 @@ class GenericView(viewsets.ViewSet):
         if "create" not in self.allowed_methods:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+        self.initialize_queryset(request)
+
         self.pre_create(request)
 
         serializer = self.serializer_class(data=request.data)
@@ -113,6 +119,8 @@ class GenericView(viewsets.ViewSet):
     def update(self, request, pk=None):
         if "update" not in self.allowed_methods:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        
+        self.initialize_queryset(request)
 
         instance = get_object_or_404(self.queryset, pk=pk)
         self.pre_update(request, instance)
@@ -125,7 +133,7 @@ class GenericView(viewsets.ViewSet):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-        serializer = self.serializer_class(instance, data=request.data)
+        serializer = self.serializer_class(instance, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             self.cache_object(serializer.data, pk)
@@ -139,6 +147,8 @@ class GenericView(viewsets.ViewSet):
     def destroy(self, request, pk=None):
         if "delete" not in self.allowed_methods:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+        self.initialize_queryset(request)
 
         instance = get_object_or_404(self.queryset, pk=pk)
         self.delete_cache(pk)
@@ -193,10 +203,10 @@ class GenericView(viewsets.ViewSet):
     def get_object_cache_key(self, pk):
         return f"{self.cache_key_prefix}_object_{pk}"
 
-    def get_list_cache_key(self, filters, excludes, top, bottom):
+    def get_list_cache_key(self, filters, excludes, top, bottom, order_by):
         return (
             f"{self.cache_key_prefix}_list_{hash(frozenset(filters.items()))}_"
-            f"{hash(frozenset(excludes.items()))}_{top}_{bottom}"
+            f"{hash(frozenset(excludes.items()))}_{top}_{bottom}_{order_by}"
         )
 
     # Helper methods
@@ -267,7 +277,7 @@ class GenericView(viewsets.ViewSet):
             "current_page": page.number,
         }
 
-        cache_key = self.get_list_cache_key(filters, excludes, top, bottom)
+        cache_key = self.get_list_cache_key(filters, excludes, top, bottom, order_by)
         cache.set(cache_key, data, self.cache_duration)
 
         return Response(data, status=status.HTTP_200_OK)
@@ -275,3 +285,6 @@ class GenericView(viewsets.ViewSet):
     def get_serialized_object(self, pk):
         instance = get_object_or_404(self.queryset, pk=pk)
         return self.serializer_class(instance).data
+    
+    def initialize_queryset(self, request):
+        pass
