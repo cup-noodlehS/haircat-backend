@@ -4,8 +4,6 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action
-from django.contrib.auth import authenticate
-from rest_framework import serializers
 
 from haircat.permissions import IsAuthenticated
 from haircat.utils import GenericView
@@ -23,6 +21,7 @@ from .serializers import (
     AppointmentTimeSlotSerializer,
     QnaAnswerSerializer,
     QnaQuestionSerializer,
+    ChangePasswordSerializer,
 )
 from .models import (
     CustomUser,
@@ -37,17 +36,6 @@ from .models import (
     QnaAnswer,
     QnaQuestion,
 )
-
-
-class ChangePasswordSerializer(serializers.Serializer):
-    current_password = serializers.CharField(required=True)
-    new_password = serializers.CharField(required=True, min_length=8)
-
-    def validate_current_password(self, value):
-        user = self.context['request'].user
-        if not authenticate(username=user.username, password=value):
-            raise serializers.ValidationError("Current password is incorrect")
-        return value
 
 
 class ChangePasswordView(APIView):

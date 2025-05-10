@@ -12,7 +12,8 @@ from .base_serializers import (
     QnaQuestionBaseSerializer
 )
 from general.base_serializers import FileBaseSerializer, LocationBaseSerializer
-
+from django.contrib.auth import authenticate
+from rest_framework import serializers
 
 class BarberSerializer(BarberBaseSerializer):
     pfp = FileBaseSerializer(read_only=True)
@@ -79,3 +80,13 @@ class QnaQuestionSerializer(QnaQuestionBaseSerializer):
 
 class QnaAnswerSerializer(QnaAnswerBaseSerializer):
     question = QnaQuestionBaseSerializer(read_only=True)
+
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True, min_length=8)
+
+    def validate_current_password(self, value):
+        user = self.context['request'].user
+        if not authenticate(username=user.username, password=value):
+            raise serializers.ValidationError("Current password is incorrect")
+        return value
