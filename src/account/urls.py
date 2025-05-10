@@ -17,6 +17,7 @@ from .views import (
     AppointmentTimeSlotView,
     QnaAnswerView,
     QnaQuestionView,
+    ChangePasswordView,
 )
 from .throttling import UserLoginRateThrottle
 from rest_framework.throttling import AnonRateThrottle
@@ -33,6 +34,7 @@ urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("me/", UserProfileView.as_view(), name="user_profile"),
     path("logout/", LogoutView.as_view(), name="logout"),
+    path("change-password/", ChangePasswordView.as_view(), name="change_password"),
     path(
         "users/", UserView.as_view({"get": "list", "post": "create"}), name="user-list"
     ),

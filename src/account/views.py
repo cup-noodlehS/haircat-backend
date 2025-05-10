@@ -22,7 +22,8 @@ from .serializers import (
     AppointmentTimeSlotSerializer,
     QnaAnswerSerializer,
     QnaQuestionSerializer,
-    SpecialistShopImageSerializer,
+    ChangePasswordSerializer,
+    SpecialistShopImageSerializer
 )
 from .models import (
     CustomUser,
@@ -38,6 +39,20 @@ from .models import (
     QnaAnswer,
     QnaQuestion,
 )
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ChangePasswordSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            user = request.user
+            user.set_password(serializer.validated_data['new_password'])
+            user.save()
+            return Response({"detail": "Password changed successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RegisterView(generics.CreateAPIView):
