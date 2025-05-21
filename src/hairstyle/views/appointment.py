@@ -26,6 +26,7 @@ from django.core.cache import cache
 from django.core.paginator import Paginator
 from django.db.models import Q
 
+from general.webhooks import send_webhook
 
 
 class AppointmentView(GenericView):
@@ -130,6 +131,32 @@ class AppointmentMessageView(GenericView):
         request._full_data = mutable_data
 
         return self.create(request)
+    
+    def post_create(self, request, instance):
+        # Get thread and serialize instance directly
+        thread = instance.appointment_message_thread
+        serialized_data = self.serializer_class(instance, context=self.serializer_context).data
+        
+        # Get recipient IDs more efficiently
+        current_user_id = request.user.id
+        recipient_ids = [
+            thread.appointment.customer.user.id,
+            thread.appointment.service.specialist.user.id
+        ]
+        recipient_ids = [user_id for user_id in recipient_ids if user_id != current_user_id]
+        
+        # Send webhooks to all recipients
+        for recipient_id in recipient_ids:
+            send_webhook(
+                "appointment_message",
+                recipient_id,
+                {
+                    "appointment_message_id": instance.id,
+                    "message": serialized_data,
+                    "thread_id": thread.id,
+                },
+            )
+
 
     @action(detail=False, methods=["get"])
     def list(self, request, thread_id=None):
