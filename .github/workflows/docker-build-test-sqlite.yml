@@ -37,6 +37,14 @@ jobs:
               run: |
                   docker run haircat:test python src/manage.py migrate
 
+            - name: Check for required packages
+              run: |
+                  docker run haircat:test pip list | grep -E "daphne|channels"
+
             - name: Run tests
               run: |
                   docker run haircat:test python src/manage.py test
+
+            - name: Test ASGI configuration
+              run: |
+                  docker run --entrypoint python haircat:test -c "import haircat.asgi; print('ASGI configuration is valid')"
