@@ -84,10 +84,28 @@ start_server() {
     cd src && python -m daphne -b 0.0.0.0 -p 8000 haircat.asgi:application
 }
 
+# Get IP address for this machine (works on macOS/Linux)
+get_ip_address() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS
+        ipconfig getifaddr en0 || ipconfig getifaddr en1 || echo "127.0.0.1"
+    else
+        # Linux
+        hostname -I | awk '{print $1}' || echo "127.0.0.1"
+    fi
+}
+
+# Get the machine's IP address
+IP_ADDRESS=$(get_ip_address)
+
 # Start the development server with Daphne
 echo "Starting development server with Daphne..."
-echo "Development server will be running at http://127.0.0.1:8000/"
-echo "WebSocket endpoint will be available at ws://127.0.0.1:8000/ws/webhooks/"
+echo "Local server URL: http://127.0.0.1:8000/"
+echo "External server URL: http://${IP_ADDRESS}:8000/"
+echo "Local WebSocket endpoint: ws://127.0.0.1:8000/ws/webhooks/"
+echo "External WebSocket endpoint: ws://${IP_ADDRESS}:8000/ws/webhooks/"
+echo "For mobile devices, use the external WebSocket endpoint with your JWT token:"
+echo "ws://${IP_ADDRESS}:8000/ws/webhooks/?token=YOUR_JWT_TOKEN"
 echo "Press Ctrl+C to stop the server"
 
 # Create cleanup function
