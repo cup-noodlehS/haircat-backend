@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
+    "channels",
     "general",
     "account",
     "hairstyle",
@@ -84,6 +85,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "haircat.wsgi.application"
+ASGI_APPLICATION = "haircat.asgi.application"
+
+
+# Channel Layers (In-Memory for development)
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
 
 
 # Database

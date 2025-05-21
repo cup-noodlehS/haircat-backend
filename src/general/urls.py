@@ -1,5 +1,5 @@
 from django.urls import path
-from general.views import FileView, LocationView
+from general.views import FileView, LocationView, TestWebhookView
 
 urlpatterns = [
     path(
@@ -20,4 +20,6 @@ urlpatterns = [
         LocationView.as_view({"get": "retrieve", "put": "update", "delete": "destroy"}),
         name="location-detail",
     ),
+    # Webhook endpoints
+    path("webhooks/test/", TestWebhookView.as_view(), name="webhook-test"),
 ]
