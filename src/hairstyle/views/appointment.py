@@ -138,12 +138,12 @@ class AppointmentMessageView(GenericView):
         serialized_data = self.serializer_class(instance, context=self.serializer_context).data
         
         # Get recipient IDs more efficiently
-        current_user_id = request.user.id
+
         recipient_ids = [
             thread.appointment.customer.user.id,
             thread.appointment.service.specialist.user.id
         ]
-        recipient_ids = [user_id for user_id in recipient_ids if user_id != current_user_id]
+
         
         # Send webhooks to all recipients
         for recipient_id in recipient_ids:

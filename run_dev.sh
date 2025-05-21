@@ -9,7 +9,7 @@ echo "Starting Haircat Server in development mode..."
 # Install requirements if needed
 if [ "$1" == "--install" ] || [ "$2" == "--install" ] || [ "$3" == "--install" ]; then
     echo "Installing dependencies..."
-    pip install daphne channels channels-redis
+    pip install daphne channels channels-redis watchdog[watchmedo]
 fi
 
 # Set up environment for development mode
@@ -73,12 +73,43 @@ else
     export CHANNEL_LAYERS_MODULE="haircat.channel_layers_memory"
 fi
 
+# Check if auto-reload is enabled
+AUTO_RELOAD=false
+if [ "$1" == "--auto-reload" ] || [ "$2" == "--auto-reload" ] || [ "$3" == "--auto-reload" ]; then
+    AUTO_RELOAD=true
+fi
+
+# Function to start the development server
+start_server() {
+    cd src && python -m daphne -b 0.0.0.0 -p 8000 haircat.asgi:application
+}
+
 # Start the development server with Daphne
 echo "Starting development server with Daphne..."
 echo "Development server will be running at http://127.0.0.1:8000/"
 echo "WebSocket endpoint will be available at ws://127.0.0.1:8000/ws/webhooks/"
 echo "Press Ctrl+C to stop the server"
-cd src && python -m daphne -b 0.0.0.0 -p 8000 haircat.asgi:application
+
+# Create cleanup function
+cleanup() {
+    echo "Shutting down..."
+    rm -f src/haircat/channel_layers_memory.py src/haircat/channel_layers_redis.py
+    exit 0
+}
 
 # Trap Ctrl+C and perform cleanup
-trap 'echo "Shutting down..."; rm -f src/haircat/channel_layers_memory.py src/haircat/channel_layers_redis.py; exit 0' INT TERM EXIT 
+trap cleanup INT TERM EXIT 
+
+if [ "$AUTO_RELOAD" = true ]; then
+    # Check if watchdog is installed
+    if ! python -c "import watchdog" &> /dev/null; then
+        echo "Watchdog not found. Please install with: pip install watchdog[watchmedo]"
+        exit 1
+    fi
+    
+    echo "Auto-reload enabled. Server will restart when files change."
+    cd src && watchmedo auto-restart --patterns="*.py" --recursive --directory="." python -m daphne -b 0.0.0.0 -p 8000 haircat.asgi:application
+else
+    # Start server normally
+    start_server
+fi 
