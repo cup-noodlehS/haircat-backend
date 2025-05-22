@@ -69,14 +69,14 @@ class Appointment(models.Model):
         # Fetch Appointments of that user that matches the schedule. If there is, throw an error
         if not specialist.barber_shop:
             if Appointment.objects.filter(
-                service__specialist=specialist,
+                service__specialist_id=specialist.id,
                 schedule=self.schedule,
                 status=self.CONFIRMED,
             ).exists():
                 raise ValidationError("This time slot is already booked")
         else:
             if Appointment.objects.filter(
-                service__specialist=specialist,
+                service__specialist_id=specialist.id,
                 barber=self.barber,
                 schedule=self.schedule,
                 status=self.CONFIRMED,
@@ -86,10 +86,11 @@ class Appointment(models.Model):
         if specialist.auto_accept_appointment and self.status == self.PENDING:
             self.status = self.CONFIRMED
 
+        super().save(*args, **kwargs)
+        
+        # Only try to create thread after the appointment has been saved
         if not AppointmentMessageThread.objects.filter(appointment=self).exists():
             AppointmentMessageThread.objects.create(appointment=self)
-
-        super().save(*args, **kwargs)
 
 
 class Review(models.Model):
