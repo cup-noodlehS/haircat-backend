@@ -123,9 +123,9 @@ class GenericView(viewsets.ViewSet):
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
         self.crud_middleware(request)
-        self.pre_update(request, instance)
 
         instance = get_object_or_404(self.queryset, pk=pk)
+        self.pre_update(request, instance)
 
         if "*" not in self.allowed_update_fields:
             for field in request.data.keys():
