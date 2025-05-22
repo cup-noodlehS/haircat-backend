@@ -68,19 +68,25 @@ class Appointment(models.Model):
 
         # Fetch Appointments of that user that matches the schedule. If there is, throw an error
         if not specialist.barber_shop:
-            if Appointment.objects.filter(
+            query = Appointment.objects.filter(
                 service__specialist_id=specialist.id,
                 schedule=self.schedule,
                 status=self.CONFIRMED,
-            ).exists():
+            )
+            if self.pk:  # Exclude self if updating
+                query = query.exclude(pk=self.pk)
+            if query.exists():
                 raise ValidationError("This time slot is already booked")
         else:
-            if Appointment.objects.filter(
+            query = Appointment.objects.filter(
                 service__specialist_id=specialist.id,
                 barber=self.barber,
                 schedule=self.schedule,
                 status=self.CONFIRMED,
-            ).exists():
+            )
+            if self.pk:  # Exclude self if updating
+                query = query.exclude(pk=self.pk)
+            if query.exists():
                 raise ValidationError("This time slot is already booked")
 
         if specialist.auto_accept_appointment and self.status == self.PENDING:
