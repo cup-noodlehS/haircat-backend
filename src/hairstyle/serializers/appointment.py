@@ -45,5 +45,5 @@ class ReviewImageSerializer(ReviewImageBaseSerializer):
 
 
 class ReviewSerializer(ReviewBaseSerializer):
-    appointment = AppointmentBaseSerializer(read_only=True)
+    appointment = AppointmentSerializer(read_only=True)
     images = ReviewImageSerializer(read_only=True, many=True)
