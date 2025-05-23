@@ -121,6 +121,9 @@ class Specialist(models.Model):
     - user: FK to CustomUser
     - bio: text field
     - point_to_php: float field
+    - latitude: float field for location coordinates
+    - longitude: float field for location coordinates
+    - address: text field for location address
     """
 
     user = models.OneToOneField(
@@ -133,6 +136,21 @@ class Specialist(models.Model):
         default=0.0,
         validators=[MinValueValidator(0.0)],
         help_text="Conversion rate from points to PHP currency",
+    )
+    latitude = models.FloatField(
+        null=True,
+        blank=True,
+        help_text="Latitude coordinate of the specialist's location"
+    )
+    longitude = models.FloatField(
+        null=True,
+        blank=True,
+        help_text="Longitude coordinate of the specialist's location"
+    )
+    address = models.TextField(
+        null=True,
+        blank=True,
+        help_text="Full address of the specialist's location"
     )
     google_maps_link = models.URLField(
         blank=True,
