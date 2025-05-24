@@ -100,8 +100,8 @@ class Barber(models.Model):
 
     @property
     def average_rating(self):
-        reviews = self.Appointments.exclude(Reviews__isnull=True).values_list(
-            "Reviews__rating", flat=True
+        reviews = self.Appointments.exclude(review__isnull=True).values_list(
+            "review__rating", flat=True
         )
         if not reviews:
             return 0
@@ -109,7 +109,7 @@ class Barber(models.Model):
 
     @property
     def reviews_count(self):
-        return self.Appointments.exclude(Reviews__isnull=True).count()
+        return self.Appointments.exclude(review__isnull=True).count()
 
     def __str__(self):
         return f"{self.barber_shop.name} - {self.name}"

@@ -101,8 +101,8 @@ class Appointment(models.Model):
 
 class Review(models.Model):
 
-    appointment = models.ForeignKey(
-        Appointment, on_delete=models.CASCADE, related_name="Reviews"
+    appointment = models.OneToOneField(
+        Appointment, on_delete=models.CASCADE, related_name="review", unique=True
     )
     rating = models.IntegerField(
         default=5, validators=[MinValueValidator(1), MaxValueValidator(5)]
