@@ -37,6 +37,7 @@ class AppointmentSerializer(AppointmentBaseSerializer):
     specialist = SpecialistSerializer(read_only=True)
     service = ServiceBaseSerializer(read_only=True)
     message_thread = AppointmentMessageThreadBaseSerializer(read_only=True)
+    review = ReviewBaseSerializer(read_only=True)
 
 
 class ReviewImageSerializer(ReviewImageBaseSerializer):
@@ -45,5 +46,5 @@ class ReviewImageSerializer(ReviewImageBaseSerializer):
 
 
 class ReviewSerializer(ReviewBaseSerializer):
-    appointment = AppointmentBaseSerializer(read_only=True)
+    appointment = AppointmentSerializer(read_only=True)
     images = ReviewImageSerializer(read_only=True, many=True)
