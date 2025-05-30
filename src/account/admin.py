@@ -205,7 +205,7 @@ class QnaAnswerAdmin(admin.ModelAdmin):
 
 @admin.register(UserNotification)
 class UserNotificationAdmin(admin.ModelAdmin):
-    list_display = ("user", "message", "created_at")
-    list_filter = ("created_at",)
+    list_display = ("user", "message", "created_at", "is_read")
+    list_filter = ("created_at", "is_read")
     search_fields = ("user__username", "user__first_name", "user__last_name", "message")
     readonly_fields = ("created_at", "updated_at")

@@ -5,6 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import AllowAny, IsAuthenticated as DRFIsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 
 from haircat.permissions import IsAuthenticated
 from haircat.utils import GenericView
@@ -251,9 +252,21 @@ class SpecialistShopImageView(viewsets.ModelViewSet):
 
 class UserNotificationView(GenericView):
     permission_classes = [DRFIsAuthenticated]
-    queryset = UserNotification.objects.all()
+    queryset = UserNotification.objects.all().order_by("-created_at")
     serializer_class = UserNotificationSerializer
     allowed_methods = ["list", "retrieve"]
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+        return self.queryset.filter(user=self.request.user).order_by("-created_at")
+    
+    def list(self, request):
+        self.crud_middleware(request)
+
+        try:
+            filters, excludes = self.parse_query_params(request)
+            top, bottom, order_by = self.get_pagination_params(filters)
+            res = self.filter(request, filters, excludes, top, bottom, order_by)
+            self.queryset.filter(user=self.request.user, is_read=False).update(is_read=True)
+            return res
+        except ValidationError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
