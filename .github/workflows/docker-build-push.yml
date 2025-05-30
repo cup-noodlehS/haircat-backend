@@ -1,0 +1,77 @@
+name: Build and Push to ECR
+
+on:
+    push:
+        branches: ["main"] # Trigger on push to main branch
+    workflow_dispatch:
+
+env:
+    AWS_REGION: ap-southeast-1
+    ECR_REPOSITORY: ${{ secrets.ECR_REPO_NAME }}
+
+permissions:
+    contents: read
+
+jobs:
+    build-and-push:
+        name: Build and Push to ECR
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v1
+              with:
+                  aws-access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ env.AWS_REGION }}
+
+            - name: Login to Amazon ECR
+              id: login-ecr
+              uses: aws-actions/amazon-ecr-login@v1
+
+            - name: Delete .env file
+              run: |
+                  rm -f .env
+                  touch .env
+
+            - name: Create .env file
+              env:
+                  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+                  DB_NAME: ${{ secrets.DB_NAME }}
+                  DB_USER: ${{ secrets.DB_USER }}
+                  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+                  DB_HOST: ${{ secrets.DB_HOST }}
+                  DB_PORT: ${{ secrets.DB_PORT }}
+                  DEBUG: "False"
+              run: |
+                  echo "SECRET_KEY=${SECRET_KEY}" > .env
+                  echo "DB_NAME=${DB_NAME}" >> .env
+                  echo "DB_USER=${DB_USER}" >> .env
+                  echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
+                  echo "DB_HOST=${DB_HOST}" >> .env
+                  echo "DB_PORT=${DB_PORT}" >> .env
+                  echo "DEBUG=False" >> .env
+
+            - name: Build Docker image
+              env:
+                  ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+                  IMAGE_TAG: latest
+              run: |
+                  docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+
+            - name: Run tests
+              env:
+                  ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+                  IMAGE_TAG: latest
+              run: |
+                  docker run $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG python src/manage.py test
+
+            - name: Push Docker image
+              env:
+                  ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+                  IMAGE_TAG: latest
+              run: |
+                  docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
