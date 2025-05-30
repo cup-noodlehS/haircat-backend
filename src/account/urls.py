@@ -18,6 +18,7 @@ from .views import (
     QnaAnswerView,
     QnaQuestionView,
     ChangePasswordView,
+    UserNotificationView
 )
 from .throttling import UserLoginRateThrottle
 from rest_framework.throttling import AnonRateThrottle
@@ -172,5 +173,15 @@ urlpatterns = [
         "specialist-shop-images/<int:pk>/",
         SpecialistShopImageView.as_view({"get": "retrieve", "delete": "destroy"}),
         name="specialist-shop-image-detail",
+    ),
+    path(
+        "user-notifications/",
+        UserNotificationView.as_view({"get": "list"}),
+        name="user-notification-list",
+    ),
+    path(
+        "user-notifications/<int:pk>/",
+        UserNotificationView.as_view({"get": "retrieve"}),
+        name="user-notification-detail",
     ),
 ]

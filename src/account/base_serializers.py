@@ -12,6 +12,7 @@ from account.models import (
     AppointmentTimeSlot,
     QnaAnswer,
     QnaQuestion,
+    UserNotification
 )
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -166,4 +167,11 @@ class SpecialistShopImageBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SpecialistShopImage
+        fields = "__all__"
+
+
+class UserNotificationBaseSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(write_only=True)
+    class Meta:
+        model = UserNotification
         fields = "__all__"

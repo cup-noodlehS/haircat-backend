@@ -23,7 +23,8 @@ from .serializers import (
     QnaAnswerSerializer,
     QnaQuestionSerializer,
     ChangePasswordSerializer,
-    SpecialistShopImageSerializer
+    SpecialistShopImageSerializer,
+    UserNotificationSerializer
 )
 from .models import (
     CustomUser,
@@ -38,6 +39,7 @@ from .models import (
     AppointmentTimeSlot,
     QnaAnswer,
     QnaQuestion,
+    UserNotification
 )
 
 
@@ -245,3 +247,13 @@ class SpecialistShopImageView(viewsets.ModelViewSet):
             )
 
         return super().create(request, *args, **kwargs)
+
+
+class UserNotificationView(GenericView):
+    permission_classes = [DRFIsAuthenticated]
+    queryset = UserNotification.objects.all()
+    serializer_class = UserNotificationSerializer
+    allowed_methods = ["list", "retrieve"]
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)

@@ -7,3 +7,8 @@ class HairstyleConfig(AppConfig):
     
     def ready(self):
         import hairstyle.signals
+        try:
+            from .scheduler import start_scheduler
+            start_scheduler()
+        except Exception as e:
+            print(f"Error starting scheduler: {e}")

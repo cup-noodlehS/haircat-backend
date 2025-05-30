@@ -106,3 +106,13 @@ class CustomUser(AbstractUser):
         app_label = "account"
         verbose_name = "User"
         verbose_name_plural = "Users"
+
+
+class UserNotification(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.full_name} - {self.message}"

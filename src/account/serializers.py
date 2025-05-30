@@ -11,6 +11,7 @@ from .base_serializers import (
     AppointmentTimeSlotBaseSerializer,
     QnaAnswerBaseSerializer,
     QnaQuestionBaseSerializer,
+    UserNotificationBaseSerializer,
 )
 from general.base_serializers import FileBaseSerializer, LocationBaseSerializer
 from django.contrib.auth import authenticate
@@ -102,3 +103,7 @@ class ChangePasswordSerializer(serializers.Serializer):
         if not authenticate(username=user.username, password=value):
             raise serializers.ValidationError("Current password is incorrect")
         return value
+
+
+class UserNotificationSerializer(UserNotificationBaseSerializer):
+    user = UserSerializer(read_only=True)

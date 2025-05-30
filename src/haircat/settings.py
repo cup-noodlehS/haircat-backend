@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "general",
     "account",
     "hairstyle",
+    'django_apscheduler',
 ]
 
 # Custom user model
@@ -96,26 +97,16 @@ CHANNEL_LAYERS = {
 }
 
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql" if os.getenv("DB_NAME") else "django.db.backends.sqlite3",
+        "NAME": os.getenv("DB_NAME", BASE_DIR / "db.sqlite3"),
+        "USER": os.getenv("DB_USER", ""),
+        "PASSWORD": os.getenv("DB_PASSWORD", ""),
+        "HOST": os.getenv("DB_HOST", ""),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": os.getenv("DB_NAME") or "haircat",
-#         "USER": os.getenv("DB_USER") or "haircatuser",
-#         "PASSWORD": os.getenv("DB_PASSWORD") or "password",
-#         "HOST": os.getenv("DB_HOST") or "localhost",
-#         "PORT": os.getenv("DB_PORT") or "5432",
-#     }
-# }
 
 
 # Password validation
@@ -188,3 +179,7 @@ CORS_ALLOW_CREDENTIALS = True
 #     'https://app.tranches.com',
 #     'https://staging.tranches.com',
 # ]
+
+# APScheduler settings
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
