@@ -100,7 +100,7 @@ class CustomUser(AbstractUser):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.id} - {self.full_name}"
+        return f"{self.id} - {self.email}"
 
     class Meta:
         app_label = "account"
