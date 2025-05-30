@@ -175,6 +175,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Optional: If you need to allow credentials (cookies, authorization headers)
 CORS_ALLOW_CREDENTIALS = True
 
+# Get CSRF trusted origins from environment variable (comma-separated string)
 CSRF_TRUSTED_ORIGINS = [
     'https://phtdhuvfm2.ap-southeast-1.awsapprunner.com',
     'http://localhost:3000',
@@ -183,7 +184,7 @@ CSRF_TRUSTED_ORIGINS = [
     'exp://localhost:19000',
     'exp://127.0.0.1:19000',
     'exp://192.168.1.*:19000',
-]
+] + [origin.strip() for origin in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if origin.strip()]
 
 
 # APScheduler settings
