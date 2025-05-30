@@ -19,17 +19,23 @@ def appointment_status_change_handler(sender, instance, **kwargs):
             if instance.status == Appointment.CONFIRMED:
                 UserNotification.objects.create(
                     user=instance.customer.user,
-                    message=f"Your appointment for {instance.service.name} has been confirmed"
+                    message=f"Your appointment for {instance.service.name} has been confirmed",
+                    type=UserNotification.APPOINTMENT_TYPE,
+                    redirect_id=instance.id
                 )
             elif instance.status == Appointment.CANCELLED:
                 UserNotification.objects.create(
                     user=instance.customer.user,
-                    message=f"Your appointment for {instance.service.name} has been cancelled"
+                    message=f"Your appointment for {instance.service.name} has been cancelled",
+                    type=UserNotification.APPOINTMENT_TYPE,
+                    redirect_id=instance.id
                 )
             elif instance.status == Appointment.COMPLETED:
                 UserNotification.objects.create(
                     user=instance.customer.user,
-                    message=f"Your appointment for {instance.service.name} has been completed"
+                    message=f"Your appointment for {instance.service.name} has been completed",
+                    type=UserNotification.APPOINTMENT_TYPE,
+                    redirect_id=instance.id
                 )
     except Appointment.DoesNotExist:
         pass
@@ -68,5 +74,7 @@ def appointment_webhook_handler(sender, instance, created, **kwargs):
     if created:
         UserNotification.objects.create(
             user=instance.service.specialist.user,
-            message=f"New appointment request from {instance.customer.user.full_name} for {instance.service.name}"
+            message=f"New appointment request from {instance.customer.user.full_name} for {instance.service.name}",
+            type=UserNotification.APPOINTMENT_TYPE,
+            redirect_id=instance.id
         ) 

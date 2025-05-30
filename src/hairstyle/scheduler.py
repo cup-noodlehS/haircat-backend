@@ -23,11 +23,15 @@ def check_pending_appointments():
         # Create notifications for both customer and specialist
         UserNotification.objects.create(
             user=appointment.customer.user,
-            message=f"Your appointment for {appointment.service.name} has been automatically cancelled as it was not confirmed before the scheduled time."
+            message=f"Your appointment for {appointment.service.name} has been automatically cancelled as it was not confirmed before the scheduled time.",
+            type=UserNotification.APPOINTMENT_TYPE,
+            redirect_id=appointment.id
         )
         UserNotification.objects.create(
             user=appointment.service.specialist.user,
-            message=f"Appointment with {appointment.customer.user.full_name} for {appointment.service.name} has been automatically cancelled as it was not confirmed before the scheduled time."
+            message=f"Appointment with {appointment.customer.user.full_name} for {appointment.service.name} has been automatically cancelled as it was not confirmed before the scheduled time.",
+            type=UserNotification.APPOINTMENT_TYPE,
+            redirect_id=appointment.id
         )
 
 def notify_day_before():
@@ -44,7 +48,9 @@ def notify_day_before():
     for appointment in upcoming_appointments:
         UserNotification.objects.create(
             user=appointment.service.specialist.user,
-            message=f"You have an appointment tomorrow with {appointment.customer.user.full_name} for {appointment.service.name} at {appointment.schedule.strftime('%I:%M %p')}"
+            message=f"You have an appointment tomorrow with {appointment.customer.user.full_name} for {appointment.service.name} at {appointment.schedule.strftime('%I:%M %p')}",
+            type=UserNotification.APPOINTMENT_TYPE,
+            redirect_id=appointment.id
         )
 
 def notify_six_hours_before():
@@ -62,12 +68,16 @@ def notify_six_hours_before():
         # Notify customer
         UserNotification.objects.create(
             user=appointment.customer.user,
-            message=f"Reminder: Your appointment for {appointment.service.name} is in 6 hours at {appointment.schedule.strftime('%I:%M %p')}"
+            message=f"Reminder: Your appointment for {appointment.service.name} is in 6 hours at {appointment.schedule.strftime('%I:%M %p')}",
+            type=UserNotification.APPOINTMENT_TYPE,
+            redirect_id=appointment.id
         )
         # Notify specialist
         UserNotification.objects.create(
             user=appointment.service.specialist.user,
-            message=f"Reminder: You have an appointment with {appointment.customer.user.full_name} for {appointment.service.name} in 6 hours at {appointment.schedule.strftime('%I:%M %p')}"
+            message=f"Reminder: You have an appointment with {appointment.customer.user.full_name} for {appointment.service.name} in 6 hours at {appointment.schedule.strftime('%I:%M %p')}",
+            type=UserNotification.APPOINTMENT_TYPE,
+            redirect_id=appointment.id
         )
 
 def check_completed_appointments():

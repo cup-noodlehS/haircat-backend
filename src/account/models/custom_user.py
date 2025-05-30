@@ -109,11 +109,25 @@ class CustomUser(AbstractUser):
 
 
 class UserNotification(models.Model):
+    APPOINTMENT_TYPE = "appointment"
+    MESSAGE_TYPE = "message"
+    REVIEW_TYPE = "review"
+    OTHER_TYPE = "other"
+    
+    TYPE_CHOICES = [
+        (APPOINTMENT_TYPE, "Appointment"),
+        (MESSAGE_TYPE, "Message"),
+        (REVIEW_TYPE, "Review"),
+        (OTHER_TYPE, "Other"),
+    ]
+    
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="notifications")
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_read = models.BooleanField(default=False)
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default="other")
+    redirect_id = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.full_name} - {self.message}"
