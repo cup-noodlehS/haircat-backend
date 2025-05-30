@@ -261,6 +261,7 @@ class UserNotificationView(GenericView):
     
     def list(self, request):
         self.crud_middleware(request)
+        self.queryset = self.queryset.filter(user=self.request.user)
 
         try:
             filters, excludes = self.parse_query_params(request)
