@@ -169,23 +169,22 @@ REST_FRAMEWORK = {
     },
 }
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:5173",  # Your frontend development server
-#     "https://app.tranches.com",
-#     "https://staging.tranches.com",
-#     "https://q9vm73uaem.us-east-1.awsapprunner.com",
-# ]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
 # Optional: If you need to allow credentials (cookies, authorization headers)
 CORS_ALLOW_CREDENTIALS = True
 
-# CSRF_TRUSTED_ORIGINS = [
-#     'https://q9vm73uaem.us-east-1.awsapprunner.com',
-#     'https://app.tranches.com',
-#     'https://staging.tranches.com',
-# ]
+CSRF_TRUSTED_ORIGINS = [
+    'https://phtdhuvfm2.ap-southeast-1.awsapprunner.com',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://localhost:3000',
+    'exp://localhost:19000',
+    'exp://127.0.0.1:19000',
+    'exp://192.168.1.*:19000',
+]
+
 
 # APScheduler settings
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
