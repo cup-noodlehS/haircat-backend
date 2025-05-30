@@ -270,3 +270,6 @@ class UserNotificationView(GenericView):
             return res
         except ValidationError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def count(self, request):
+        return Response(self.queryset.filter(user=self.request.user, is_read=False).count(), status=status.HTTP_200_OK)

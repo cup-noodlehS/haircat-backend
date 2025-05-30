@@ -180,6 +180,11 @@ urlpatterns = [
         name="user-notification-list",
     ),
     path(
+        "user-notifications/count/",
+        UserNotificationView.as_view({"get": "count"}),
+        name="user-notification-count",
+    ),
+    path(
         "user-notifications/<int:pk>/",
         UserNotificationView.as_view({"get": "retrieve"}),
         name="user-notification-detail",
