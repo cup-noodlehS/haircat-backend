@@ -8,18 +8,29 @@ from account.models.custom_user import UserNotification
 @receiver(pre_save, sender=Appointment)
 def appointment_status_change_handler(sender, instance, **kwargs):
     """
-    Create user notification when appointment status changes to confirmed.
+    Create user notification when appointment status changes to confirmed, cancelled, or completed.
     """
     if not instance.pk:  # Skip for new instances
         return
         
     try:
         old_instance = Appointment.objects.get(pk=instance.pk)
-        if old_instance.status != Appointment.CONFIRMED and instance.status == Appointment.CONFIRMED:
-            UserNotification.objects.create(
-                user=instance.customer.user,
-                message=f"Your appointment for {instance.service.name} has been confirmed"
-            )
+        if old_instance.status != instance.status:
+            if instance.status == Appointment.CONFIRMED:
+                UserNotification.objects.create(
+                    user=instance.customer.user,
+                    message=f"Your appointment for {instance.service.name} has been confirmed"
+                )
+            elif instance.status == Appointment.CANCELLED:
+                UserNotification.objects.create(
+                    user=instance.customer.user,
+                    message=f"Your appointment for {instance.service.name} has been cancelled"
+                )
+            elif instance.status == Appointment.COMPLETED:
+                UserNotification.objects.create(
+                    user=instance.customer.user,
+                    message=f"Your appointment for {instance.service.name} has been completed"
+                )
     except Appointment.DoesNotExist:
         pass
 
