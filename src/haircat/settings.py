@@ -184,6 +184,7 @@ CSRF_TRUSTED_ORIGINS = [
     'exp://localhost:19000',
     'exp://127.0.0.1:19000',
     'exp://192.168.1.*:19000',
+    'https://haircat-api.sheldonarthursagrado.site',
 ] + [origin.strip() for origin in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if origin.strip()]
 
 
